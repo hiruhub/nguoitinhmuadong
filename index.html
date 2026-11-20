@@ -1,0 +1,3864 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>AQUARIA — Hành Trình Vĩnh Cửu Của Giọt Nước</title>
+  <meta name="description" content="Khám phá vòng tuần hoàn nước qua thế giới anime fantasy tương tác. Học tập, thí nghiệm, chơi game cùng Aqua.">
+  <meta name="theme-color" content="#6ABFE8">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    :root {
+      --ocean-blue: #6ABFE8;
+      --sky-blue: #A8DDF4;
+      --soft-aqua: #B9F0E8;
+      --pearl-white: #F8FCFF;
+      --deep-ocean: #285477;
+      --mint-green: #BFE8D1;
+      --lavender: #DCD7F8;
+      --cloud-white: #FFFFFF;
+      --warm-sunlight: #FFE5A6;
+      --pink: #FFD1DC;
+      --text-dark: #1a2e3d;
+      --text-medium: #3d5a6e;
+      --text-light: #6b8a9e;
+      --shadow-xs: 0 1px 3px rgba(40, 84, 119, 0.06);
+      --shadow-sm: 0 2px 8px rgba(40, 84, 119, 0.08);
+      --shadow-md: 0 8px 24px rgba(40, 84, 119, 0.12);
+      --shadow-lg: 0 16px 48px rgba(40, 84, 119, 0.16);
+      --shadow-glow: 0 0 40px rgba(106, 191, 232, 0.4);
+      --radius-sm: 12px;
+      --radius-md: 20px;
+      --radius-lg: 28px;
+      --radius-xl: 36px;
+      --radius-full: 999px;
+      --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-slow: 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      --font-display: 'Be Vietnam Pro', 'Inter', sans-serif;
+      --font-body: 'Inter', 'Be Vietnam Pro', sans-serif;
+      --font-accent: 'Nunito', 'Be Vietnam Pro', sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: var(--font-body);
+      color: var(--text-dark);
+      background: var(--pearl-white);
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Custom Cursor Trail (subtle) */
+    .cursor-ripple {
+      position: fixed;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      border: 2px solid var(--ocean-blue);
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      animation: rippleOut 0.6s ease-out forwards;
+      opacity: 0.7;
+    }
+    @keyframes rippleOut {
+      0% { width: 20px; height: 20px; opacity: 0.7; }
+      100% { width: 100px; height: 100px; opacity: 0; }
+    }
+
+    ::-webkit-scrollbar { width: 10px; }
+    ::-webkit-scrollbar-track { background: var(--pearl-white); }
+    ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--ocean-blue), var(--deep-ocean)); border-radius: 5px; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+    .hidden { display: none !important; }
+
+    button { font-family: inherit; cursor: pointer; border: none; background: none; }
+    button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
+      outline: 3px solid var(--ocean-blue);
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+
+    /* ============ BUTTONS ============ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 13px 30px;
+      border-radius: var(--radius-full);
+      font-weight: 700;
+      font-size: 0.95rem;
+      letter-spacing: 0.02em;
+      transition: all var(--transition);
+      position: relative;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at var(--ripple-x, 50%) var(--ripple-y, 50%), rgba(255,255,255,0.5) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+    .btn:active::after { opacity: 1; transition: opacity 0s; }
+    .btn:hover { transform: translateY(-2px); }
+    .btn:active { transform: translateY(0); }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--ocean-blue), var(--deep-ocean));
+      color: white;
+      box-shadow: 0 6px 20px rgba(106, 191, 232, 0.4);
+    }
+    .btn-primary:hover { box-shadow: 0 10px 32px rgba(106, 191, 232, 0.6); }
+    .btn-secondary {
+      background: white;
+      color: var(--deep-ocean);
+      border: 2px solid var(--sky-blue);
+    }
+    .btn-secondary:hover { background: var(--pearl-white); border-color: var(--ocean-blue); box-shadow: var(--shadow-md); }
+    .btn-ghost { background: transparent; color: var(--deep-ocean); }
+    .btn-ghost:hover { background: rgba(106, 191, 232, 0.12); }
+    .btn-sm { padding: 9px 20px; font-size: 0.85rem; }
+
+    /* ============ INTRO ============ */
+    #introScreen {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: linear-gradient(180deg, #A8DDF4 0%, #6ABFE8 35%, #4A9BC8 70%, #285477 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      transition: opacity 1.2s ease, visibility 1.2s ease;
+    }
+    #introScreen.fade-out { opacity: 0; visibility: hidden; pointer-events: none; }
+
+    .intro-sun {
+      position: absolute;
+      top: 12%; left: 50%;
+      transform: translateX(-50%);
+      width: 280px; height: 280px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,229,166,0.9) 0%, rgba(255,229,166,0.3) 40%, transparent 70%);
+      animation: sunPulse 6s ease-in-out infinite;
+      filter: blur(10px);
+    }
+    @keyframes sunPulse {
+      0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.8; }
+      50% { transform: translateX(-50%) scale(1.1); opacity: 1; }
+    }
+
+    .intro-clouds {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 45%;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 200'%3E%3Cg fill='white' opacity='0.5'%3E%3Cellipse cx='150' cy='100' rx='120' ry='50'/%3E%3Cellipse cx='300' cy='80' rx='100' ry='40'/%3E%3Cellipse cx='600' cy='110' rx='140' ry='55'/%3E%3Cellipse cx='850' cy='75' rx='110' ry='45'/%3E%3Cellipse cx='1050' cy='105' rx='130' ry='50'/%3E%3C/g%3E%3C/svg%3E") no-repeat center bottom;
+      background-size: 120% auto;
+      animation: cloudDrift 40s linear infinite;
+    }
+    @keyframes cloudDrift {
+      0% { transform: translateX(-5%); }
+      50% { transform: translateX(5%); }
+      100% { transform: translateX(-5%); }
+    }
+
+    .intro-ocean {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 35%;
+      background: linear-gradient(180deg, transparent 0%, rgba(74,155,200,0.5) 20%, rgba(40,84,119,0.7) 100%);
+    }
+    .intro-ocean::before, .intro-ocean::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0;
+      height: 60px;
+      background: radial-gradient(ellipse 40% 100% at 50% 0, rgba(255,255,255,0.15), transparent 70%);
+      animation: waveRoll 8s ease-in-out infinite;
+    }
+    .intro-ocean::after { top: 30px; animation-delay: -4s; opacity: 0.5; }
+    @keyframes waveRoll {
+      0%, 100% { transform: translateX(-10%); }
+      50% { transform: translateX(10%); }
+    }
+
+    .intro-particles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+    .intro-particle {
+      position: absolute;
+      background: rgba(255,255,255,0.75);
+      border-radius: 50%;
+      animation: floatUp linear infinite;
+      box-shadow: 0 0 8px rgba(255,255,255,0.6);
+    }
+    @keyframes floatUp {
+      0% { transform: translateY(100vh) scale(0); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+    }
+
+    .intro-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 24px;
+      animation: introReveal 1.5s ease-out;
+    }
+    @keyframes introReveal {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .intro-mascot {
+      width: 160px; height: 160px;
+      margin: 0 auto 24px;
+      animation: mascotFloat 3s ease-in-out infinite;
+      filter: drop-shadow(0 12px 40px rgba(106,191,232,0.7));
+      position: relative;
+    }
+    .intro-mascot::before {
+      content: '';
+      position: absolute;
+      inset: -30%;
+      background: radial-gradient(circle, rgba(185,240,232,0.5), transparent 70%);
+      border-radius: 50%;
+      animation: auraPulse 2.5s ease-in-out infinite;
+    }
+    @keyframes auraPulse {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.15); opacity: 0.8; }
+    }
+    @keyframes mascotFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+
+    .intro-title {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 9vw, 6.5rem);
+      font-weight: 900;
+      color: white;
+      letter-spacing: 0.1em;
+      text-shadow: 0 4px 40px rgba(40,84,119,0.5), 0 0 80px rgba(255,255,255,0.4);
+      margin-bottom: 10px;
+      background: linear-gradient(180deg, #FFFFFF 0%, #E0F5FF 50%, #A8DDF4 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: titleShimmer 4s ease-in-out infinite;
+    }
+    @keyframes titleShimmer {
+      0%, 100% { filter: drop-shadow(0 0 20px rgba(255,255,255,0.4)); }
+      50% { filter: drop-shadow(0 0 40px rgba(255,255,255,0.8)); }
+    }
+    .intro-subtitle {
+      font-family: var(--font-accent);
+      font-size: clamp(0.9rem, 2.5vw, 1.4rem);
+      color: rgba(255,255,255,0.95);
+      letter-spacing: 0.3em;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .intro-subtitle-vi {
+      font-size: clamp(0.85rem, 2vw, 1.1rem);
+      color: var(--warm-sunlight);
+      letter-spacing: 0.2em;
+      font-weight: 600;
+      margin-bottom: 44px;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.2);
+    }
+
+    .intro-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .intro-buttons .btn-primary {
+      background: white;
+      color: var(--deep-ocean);
+      box-shadow: 0 8px 32px rgba(255,255,255,0.4);
+      font-size: 1rem;
+      padding: 16px 36px;
+    }
+    .intro-buttons .btn-primary:hover {
+      background: var(--warm-sunlight);
+      box-shadow: 0 12px 44px rgba(255,229,166,0.7);
+    }
+    .intro-buttons .btn-secondary {
+      background: rgba(255,255,255,0.15);
+      color: white;
+      border-color: rgba(255,255,255,0.5);
+      backdrop-filter: blur(12px);
+      font-size: 1rem;
+      padding: 16px 36px;
+    }
+    .intro-buttons .btn-secondary:hover { background: rgba(255,255,255,0.3); }
+
+    .skip-intro {
+      position: absolute;
+      top: 24px; right: 24px;
+      color: rgba(255,255,255,0.85);
+      font-size: 0.85rem;
+      padding: 10px 20px;
+      border-radius: var(--radius-full);
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(10px);
+      transition: all var(--transition);
+      z-index: 3;
+      font-weight: 600;
+    }
+    .skip-intro:hover { background: rgba(255,255,255,0.3); color: white; transform: translateY(-2px); }
+
+    /* ============ APP ============ */
+    #app { min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* ============ NAVBAR ============ */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(248,252,255,0.8);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid rgba(168,221,244,0.4);
+      transition: all var(--transition);
+    }
+    .navbar.scrolled { box-shadow: var(--shadow-md); background: rgba(248,252,255,0.95); }
+    .navbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 72px;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-size: 1.5rem;
+      color: var(--deep-ocean);
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      transition: transform var(--transition);
+    }
+    .logo:hover { transform: scale(1.03); }
+    .logo svg { width: 36px; height: 36px; filter: drop-shadow(0 2px 8px rgba(106,191,232,0.4)); }
+
+    .nav-links { display: flex; gap: 4px; list-style: none; }
+    .nav-links button {
+      padding: 9px 18px;
+      border-radius: var(--radius-full);
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-medium);
+      transition: all var(--transition);
+    }
+    .nav-links button:hover { background: rgba(106,191,232,0.12); color: var(--deep-ocean); }
+    .nav-links button.active {
+      background: linear-gradient(135deg, var(--ocean-blue), var(--deep-ocean));
+      color: white;
+      box-shadow: 0 4px 14px rgba(106,191,232,0.4);
+    }
+
+    .nav-right { display: flex; align-items: center; gap: 10px; }
+    .progress-ring {
+      position: relative;
+      width: 48px; height: 48px;
+      cursor: pointer;
+      transition: transform var(--transition);
+    }
+    .progress-ring:hover { transform: scale(1.08); }
+    .progress-ring svg { transform: rotate(-90deg); }
+    .progress-ring .progress-text {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.68rem;
+      font-weight: 800;
+      color: var(--deep-ocean);
+    }
+    .icon-btn {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-medium);
+      transition: all var(--transition);
+    }
+    .icon-btn:hover { background: rgba(106,191,232,0.15); color: var(--deep-ocean); transform: scale(1.05); }
+    .icon-btn svg { width: 20px; height: 20px; }
+    .mobile-menu-btn { display: none; }
+
+    @media (max-width: 900px) {
+      .nav-links {
+        position: fixed;
+        top: 72px; left: 0; right: 0;
+        flex-direction: column;
+        background: rgba(248,252,255,0.98);
+        backdrop-filter: blur(24px);
+        padding: 16px;
+        gap: 8px;
+        border-bottom: 1px solid rgba(168,221,244,0.4);
+        transform: translateY(-120%);
+        transition: transform var(--transition-slow);
+        z-index: 99;
+        box-shadow: var(--shadow-lg);
+      }
+      .nav-links.open { transform: translateY(0); }
+      .nav-links button { width: 100%; text-align: left; padding: 14px 20px; font-size: 0.95rem; }
+      .mobile-menu-btn { display: flex; }
+    }
+
+    /* ============ PAGES ============ */
+    .page { display: none; }
+    .page.active { display: block; animation: pageIn 0.55s cubic-bezier(0.34, 1.2, 0.64, 1); }
+    @keyframes pageIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ============ HERO ============ */
+    .hero {
+      position: relative;
+      min-height: 88vh;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      background: linear-gradient(180deg, #A8DDF4 0%, #B9F0E8 35%, #E8F8F5 60%, #F8FCFF 100%);
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 10%; left: 50%;
+      width: 500px; height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,229,166,0.4) 0%, transparent 70%);
+      transform: translateX(-50%);
+      animation: sunPulse 8s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .hero-clouds {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 50%;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 300'%3E%3Cg fill='white' opacity='0.4'%3E%3Cellipse cx='200' cy='120' rx='140' ry='55'/%3E%3Cellipse cx='450' cy='90' rx='120' ry='45'/%3E%3Cellipse cx='700' cy='130' rx='160' ry='60'/%3E%3Cellipse cx='1000' cy='100' rx='130' ry='50'/%3E%3C/g%3E%3C/svg%3E") no-repeat center bottom;
+      background-size: 130% auto;
+      animation: cloudDrift 50s linear infinite;
+      pointer-events: none;
+    }
+    .hero-canvas-wrap { position: absolute; inset: 0; z-index: 1; }
+    #heroCanvas { width: 100%; height: 100%; display: block; }
+    .hero-fallback {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .hero-fallback .sphere-2d {
+      width: 280px; height: 280px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #fff 0%, #A8DDF4 30%, #6ABFE8 70%, #285477 100%);
+      box-shadow: 0 20px 80px rgba(40,84,119,0.4), inset -15px -15px 50px rgba(40,84,119,0.25), inset 10px 10px 40px rgba(255,255,255,0.5);
+      animation: sphereFloat 5s ease-in-out infinite;
+      position: relative;
+    }
+    .hero-fallback .sphere-2d::before {
+      content: '';
+      position: absolute;
+      inset: -20%;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(106,191,232,0.4), transparent 70%);
+      animation: auraPulse 3s ease-in-out infinite;
+    }
+    @keyframes sphereFloat {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-25px) scale(1.02); }
+    }
+
+    .hero-content { position: relative; z-index: 2; max-width: 680px; padding: 60px 0; }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      background: rgba(255,255,255,0.85);
+      border-radius: var(--radius-full);
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--deep-ocean);
+      margin-bottom: 24px;
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid rgba(168,221,244,0.6);
+    }
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 5.5vw, 3.8rem);
+      font-weight: 900;
+      color: var(--deep-ocean);
+      line-height: 1.1;
+      margin-bottom: 18px;
+      letter-spacing: -0.02em;
+    }
+    .hero-title span {
+      background: linear-gradient(135deg, var(--ocean-blue), var(--deep-ocean));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-desc {
+      font-size: clamp(1rem, 2vw, 1.15rem);
+      color: var(--text-medium);
+      margin-bottom: 36px;
+      max-width: 540px;
+      line-height: 1.65;
+    }
+    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+    @media (max-width: 768px) {
+      .hero { min-height: 78vh; }
+      .hero-content { padding: 40px 0; }
+      .hero-fallback .sphere-2d { width: 200px; height: 200px; }
+    }
+
+    /* ============ STATS ============ */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin: -50px auto 0;
+      position: relative;
+      z-index: 3;
+      padding: 0 24px;
+      max-width: 1280px;
+    }
+    .stat-card {
+      background: white;
+      border-radius: var(--radius-md);
+      padding: 24px 20px;
+      box-shadow: var(--shadow-md);
+      text-align: center;
+      transition: all var(--transition);
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(168,221,244,0.3);
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--sky-blue), var(--ocean-blue), var(--sky-blue));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.6s;
+    }
+    .stat-card:hover::before { transform: scaleX(1); }
+    .stat-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); }
+    .stat-icon {
+      width: 52px; height: 52px;
+      margin: 0 auto 14px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--sky-blue), var(--soft-aqua));
+      color: var(--deep-ocean);
+      box-shadow: 0 4px 12px rgba(168,221,244,0.4);
+    }
+    .stat-icon svg { width: 26px; height: 26px; }
+    .stat-value {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--deep-ocean);
+      line-height: 1.2;
+    }
+    .stat-label { font-size: 0.82rem; color: var(--text-light); font-weight: 600; margin-top: 4px; }
+
+    /* ============ SECTION HEADER ============ */
+    .section-header { text-align: center; margin: 72px 0 44px; }
+    .section-header h2 {
+      font-family: var(--font-display);
+      font-size: clamp(1.7rem, 4vw, 2.6rem);
+      font-weight: 900;
+      color: var(--deep-ocean);
+      margin-bottom: 10px;
+      letter-spacing: -0.01em;
+    }
+    .section-header p {
+      color: var(--text-light);
+      font-size: 1.02rem;
+      max-width: 580px;
+      margin: 0 auto;
+      font-weight: 500;
+    }
+
+    /* ============ CHAPTER CARDS ============ */
+    .chapters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 26px;
+      padding-bottom: 70px;
+    }
+    .chapter-card {
+      background: white;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: all var(--transition);
+      cursor: pointer;
+      border: 2px solid transparent;
+      position: relative;
+      will-change: transform;
+    }
+    .chapter-card:hover {
+      transform: translateY(-8px) scale(1.01);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--sky-blue);
+    }
+    .chapter-card.completed { border-color: var(--mint-green); }
+    .chapter-card.completed::after {
+      content: '✓';
+      position: absolute;
+      top: -10px; right: -10px;
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: var(--mint-green);
+      color: var(--deep-ocean);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 1.1rem;
+      box-shadow: var(--shadow-md);
+      animation: badgeBounce 0.5s ease;
+    }
+    @keyframes badgeBounce {
+      0% { transform: scale(0); }
+      60% { transform: scale(1.3); }
+      100% { transform: scale(1); }
+    }
+
+    .chapter-thumb {
+      height: 180px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .chapter-thumb svg { width: 100%; height: 100%; position: absolute; inset: 0; }
+    .chapter-num {
+      position: absolute;
+      top: 12px; left: 12px;
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.95);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 0.9rem;
+      color: var(--deep-ocean);
+      box-shadow: var(--shadow-md);
+      z-index: 2;
+      backdrop-filter: blur(4px);
+    }
+    .chapter-status {
+      position: absolute;
+      top: 12px; right: 12px;
+      padding: 5px 14px;
+      border-radius: var(--radius-full);
+      font-size: 0.72rem;
+      font-weight: 800;
+      background: rgba(255,255,255,0.95);
+      color: var(--text-medium);
+      z-index: 2;
+      backdrop-filter: blur(4px);
+    }
+    .chapter-status.done { background: var(--mint-green); color: var(--deep-ocean); }
+    .chapter-body { padding: 22px; }
+    .chapter-body h3 {
+      font-family: var(--font-display);
+      font-size: 1.08rem;
+      font-weight: 800;
+      color: var(--deep-ocean);
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+    .chapter-body p {
+      font-size: 0.87rem;
+      color: var(--text-light);
+      margin-bottom: 16px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      line-height: 1.55;
+    }
+    .chapter-meta { display: flex; align-items: center; justify-content: space-between; font-size: 0.78rem; }
+    .difficulty-badge { padding: 4px 12px; border-radius: var(--radius-full); font-weight: 700; }
+    .diff-1 { background: #E8F8F0; color: #2D8B5E; }
+    .diff-2 { background: #FFF4E0; color: #B8860B; }
+    .diff-3 { background: #FFE8E0; color: #C0562A; }
+    .diff-4 { background: #F0E8FF; color: #6B4BA8; }
+    .diff-5 { background: #FFE0EC; color: #B83A6B; }
+    .chapter-meta .cta { color: var(--ocean-blue); font-weight: 700; transition: transform var(--transition); }
+    .chapter-card:hover .cta { transform: translateX(4px); display: inline-block; }
+
+    /* ============ CHAPTER DETAIL ============ */
+    .chapter-view { padding: 40px 0 80px; }
+    .chapter-nav-top { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; flex-wrap: wrap; }
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 10px 20px;
+      border-radius: var(--radius-full);
+      background: white;
+      box-shadow: var(--shadow-sm);
+      color: var(--text-medium);
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all var(--transition);
+    }
+    .back-btn:hover { background: var(--pearl-white); color: var(--deep-ocean); transform: translateX(-3px); }
+
+    .chapter-hero {
+      border-radius: var(--radius-lg);
+      padding: 56px 40px;
+      margin-bottom: 32px;
+      position: relative;
+      overflow: hidden;
+      color: white;
+      box-shadow: var(--shadow-md);
+    }
+    .chapter-hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(1.7rem, 4vw, 2.6rem);
+      font-weight: 900;
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 2;
+      text-shadow: 0 2px 20px rgba(40,84,119,0.3);
+    }
+    .chapter-hero .chapter-topic {
+      font-size: 0.95rem;
+      opacity: 0.9;
+      position: relative;
+      z-index: 2;
+      font-weight: 500;
+    }
+    .chapter-hero .chapter-art {
+      position: absolute;
+      right: -20px; top: 50%;
+      transform: translateY(-50%);
+      width: 280px; height: 280px;
+      opacity: 0.85;
+      z-index: 1;
+    }
+    @media (max-width: 768px) {
+      .chapter-hero { padding: 32px 24px; }
+      .chapter-hero .chapter-art { width: 160px; height: 160px; right: -40px; opacity: 0.4; }
+    }
+
+    .chapter-content-grid { display: grid; grid-template-columns: 1fr 340px; gap: 32px; }
+    @media (max-width: 900px) { .chapter-content-grid { grid-template-columns: 1fr; } }
+
+    .content-card {
+      background: white;
+      border-radius: var(--radius-md);
+      padding: 28px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 24px;
+      transition: box-shadow var(--transition);
+    }
+    .content-card:hover { box-shadow: var(--shadow-md); }
+    .content-card h2 {
+      font-family: var(--font-display);
+      font-size: 1.22rem;
+      font-weight: 800;
+      color: var(--deep-ocean);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .content-card h2 svg { width: 22px; height: 22px; color: var(--ocean-blue); }
+    .content-card p { color: var(--text-medium); font-size: 0.96rem; margin-bottom: 12px; line-height: 1.7; }
+    .content-card ul { margin: 12px 0 12px 22px; color: var(--text-medium); font-size: 0.95rem; }
+    .content-card li { margin-bottom: 8px; line-height: 1.6; }
+    .content-card strong { color: var(--deep-ocean); font-weight: 700; }
+
+    .interactive-box {
+      background: linear-gradient(135deg, #F0F8FF, #E8F8F5);
+      border-radius: var(--radius-md);
+      padding: 28px;
+      margin-bottom: 24px;
+      border: 2px dashed var(--sky-blue);
+    }
+    .interactive-box h3 {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--deep-ocean);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sim-control { display: flex; flex-direction: column; gap: 16px; margin-bottom: 20px; }
+    .sim-control label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-medium);
+      margin-bottom: 8px;
+    }
+    .sim-control input[type="range"] {
+      width: 100%;
+      height: 10px;
+      border-radius: 5px;
+      background: var(--sky-blue);
+      outline: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+    }
+    .sim-control input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background: var(--ocean-blue);
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(106,191,232,0.6), 0 0 0 4px rgba(106,191,232,0.2);
+      transition: transform var(--transition);
+    }
+    .sim-control input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+    .sim-control input[type="range"]::-moz-range-thumb {
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background: var(--ocean-blue);
+      cursor: pointer;
+      border: none;
+    }
+
+    .sim-canvas {
+      width: 100%;
+      height: 240px;
+      background: white;
+      border-radius: var(--radius-sm);
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 2px 10px rgba(40,84,119,0.08);
+    }
+
+    .clickable-locations { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+    .location-chip {
+      padding: 14px;
+      border-radius: var(--radius-sm);
+      background: white;
+      text-align: center;
+      font-size: 0.87rem;
+      font-weight: 700;
+      color: var(--text-medium);
+      cursor: pointer;
+      transition: all var(--transition);
+      border: 2px solid transparent;
+      box-shadow: var(--shadow-xs);
+    }
+    .location-chip:hover, .location-chip.active {
+      border-color: var(--ocean-blue);
+      background: rgba(106,191,232,0.08);
+      color: var(--deep-ocean);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .location-info {
+      margin-top: 16px;
+      padding: 18px 20px;
+      background: white;
+      border-radius: var(--radius-sm);
+      font-size: 0.92rem;
+      color: var(--text-medium);
+      box-shadow: var(--shadow-sm);
+      min-height: 64px;
+      line-height: 1.6;
+      border-left: 4px solid var(--ocean-blue);
+      animation: slideIn 0.3s ease;
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-8px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    .location-info strong { color: var(--deep-ocean); }
+
+    .chapter-sidebar { position: sticky; top: 92px; align-self: start; }
+    .sidebar-card {
+      background: white;
+      border-radius: var(--radius-md);
+      padding: 22px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 16px;
+      border: 1px solid rgba(168,221,244,0.3);
+    }
+    .sidebar-card h4 {
+      font-family: var(--font-display);
+      font-size: 0.98rem;
+      font-weight: 800;
+      color: var(--deep-ocean);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sidebar-card p { font-size: 0.87rem; color: var(--text-light); margin-bottom: 14px; line-height: 1.6; }
+    .ask-aqua-btn {
+      width: 100%;
+      padding: 14px;
+      border-radius: var(--radius-full);
+      background: linear-gradient(135deg, var(--soft-aqua), var(--sky-blue));
+      color: var(--deep-ocean);
+      font-weight: 800;
+      font-size: 0.92rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all var(--transition);
+      box-shadow: 0 4px 14px rgba(185,240,232,0.5);
+    }
+    .ask-aqua-btn:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+
+    .chapter-nav-buttons { display: flex; gap: 12px; margin-top: 32px; flex-wrap: wrap; }
+    .chapter-nav-buttons button { flex: 1; min-width: 140px; justify-content: center; }
+
+    /* ============ AQUA PANEL ============ */
+    .aqua-panel {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 400px;
+      max-width: calc(100vw - 48px);
+      background: white;
+      border-radius: var(--radius-lg);
+      box-shadow: 0 24px 80px rgba(40,84,119,0.3);
+      z-index: 500;
+      display: flex;
+      flex-direction: column;
+      max-height: 600px;
+      transform: translateY(120%) scale(0.9);
+      opacity: 0;
+      transition: all 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none;
+      overflow: hidden;
+      border: 1px solid rgba(168,221,244,0.4);
+    }
+    .aqua-panel.open { transform: translateY(0) scale(1); opacity: 1; pointer-events: all; }
+    .aqua-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 20px;
+      background: linear-gradient(135deg, var(--sky-blue), var(--soft-aqua));
+      color: var(--deep-ocean);
+      position: relative;
+      overflow: hidden;
+    }
+    .aqua-header::before {
+      content: '';
+      position: absolute;
+      top: -50%; right: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.4), transparent 60%);
+      animation: auraPulse 4s ease-in-out infinite;
+    }
+    .aqua-avatar {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      z-index: 1;
+    }
+    .aqua-avatar svg { width: 40px; height: 40px; }
+    .aqua-header-info { flex: 1; position: relative; z-index: 1; }
+    .aqua-header-info h4 { font-family: var(--font-display); font-size: 1.02rem; font-weight: 900; }
+    .aqua-header-info span { font-size: 0.76rem; opacity: 0.85; font-weight: 500; }
+    .aqua-close {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--deep-ocean);
+      transition: background var(--transition);
+      position: relative;
+      z-index: 1;
+    }
+    .aqua-close:hover { background: rgba(255,255,255,0.5); }
+
+    .aqua-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 220px;
+    }
+    .aqua-msg {
+      max-width: 85%;
+      padding: 13px 17px;
+      border-radius: 18px;
+      font-size: 0.9rem;
+      line-height: 1.55;
+      animation: msgIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      word-wrap: break-word;
+    }
+    @keyframes msgIn {
+      from { opacity: 0; transform: translateY(10px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .aqua-msg.bot {
+      background: linear-gradient(135deg, #F0F8FF, #E8F8F5);
+      color: var(--text-dark);
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+      border: 1px solid rgba(168,221,244,0.3);
+    }
+    .aqua-msg.user {
+      background: linear-gradient(135deg, var(--ocean-blue), var(--deep-ocean));
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+      box-shadow: 0 4px 12px rgba(106,191,232,0.3);
+    }
+    .aqua-typing {
+      display: flex;
+      gap: 5px;
+      padding: 14px 18px;
+      align-self: flex-start;
+      background: var(--pearl-white);
+      border-radius: 18px;
+      border-bottom-left-radius: 4px;
+    }
+    .aqua-typing span {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--ocean-blue);
+      animation: typingBounce 1.4s ease-in-out infinite;
+    }
+    .aqua-typing span:nth-child(2) { animation-delay: 0.2s; }
+    .aqua-typing span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typingBounce {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+      30% { transform: translateY(-6px); opacity: 1; }
+    }
+
+    .aqua-quick-questions {
+      display: flex; flex-wrap: wrap; gap: 7px;
+      padding: 0 16px 12px;
+    }
+    .quick-q {
+      padding: 7px 14px;
+      border-radius: var(--radius-full);
+      background: var(--pearl-white);
+      border: 1px solid var(--sky-blue);
+      font-size: 0.77rem;
+      color: var(--deep-ocean);
+      font-weight: 600;
+      transition: all var(--transition);
+    }
+    .quick-q:hover { background: var(--sky-blue); border-color: var(--ocean-blue); transform: translateY(-1px); }
+
+    .aqua-input-area {
+      display: flex; gap: 8px;
+      padding: 14px 16px;
+      border-top: 1px solid rgba(168,221,244,0.3);
+      background: var(--pearl-white);
+    }
+    .aqua-input-area input {
+      flex: 1;
+      padding: 11px 18px;
+      border-radius: var(--radius-full);
+      border: 2px solid var(--sky-blue);
+      font-family: inherit;
+      font-size: 0.88rem;
+      outline: none;
+      transition: border-color var(--transition);
+      background: white;
+    }
+    .aqua-input-area input:focus { border-color: var(--ocean-blue); }
+    .aqua-send {
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--ocean-blue), var(--deep-ocean));
+      color: white;
+      display: flex; align-items: center; justify-content: center;
+      transition: all var(--transition);
+      flex-shrink: 0;
+    }
+    .aqua-send:hover { transform: scale(1.08) rotate(-8deg); }
+
+    @media (max-width: 480px) {
+      .aqua-panel { bottom: 0; right: 0; left: 0; width: 100%; max-width: 100%; border-radius: var(--radius-lg) var(--radius-lg) 0 0; max-height: 75vh; }
+    }
+
+    /* ============ QUIZ ============ */
+    .quiz-container { max-width: 820px; margin: 0 auto; padding: 40px 24px 80px; }
+    .quiz-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 24px; flex-wrap: wrap; gap: 16px;
+    }
+    .quiz-level-badge {
+      padding: 7px 18px;
+      border-radius: var(--radius-full);
+      background: linear-gradient(135deg, var(--lavender), #C8BFEF);
+      color: #4A2F8C;
+      font-weight: 800;
+      font-size: 0.85rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .quiz-score-display {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      font-weight: 900;
+      color: var(--deep-ocean);
+    }
+    .quiz-progress-bar {
+      width: 100%; height: 12px;
+      background: var(--sky-blue);
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 24px;
+      box-shadow: inset 0 1px 3px rgba(40,84,119,0.1);
+    }
+    .quiz-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--ocean-blue), var(--soft-aqua), var(--ocean-blue));
+      background-size: 200% 100%;
+      border-radius: 6px;
+      transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+      animation: shimmer 2s linear infinite;
+    }
+    @keyframes shimmer {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 200% 50%; }
+    }
+    .quiz-question-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 34px;
+      box-shadow: var(--shadow-md);
+      margin-bottom: 24px;
+      animation: cardPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes cardPop {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .quiz-question-text {
+      font-family: var(--font-display);
+      font-size: 1.18rem;
+      font-weight: 800;
+      color: var(--text-dark);
+      margin-bottom: 26px;
+      line-height: 1.55;
+    }
+    .quiz-options { display: flex; flex-direction: column; gap: 11px; }
+    .quiz-option {
+      padding: 17px 22px;
+      border-radius: var(--radius-sm);
+      background: var(--pearl-white);
+      border: 2px solid transparent;
+      text-align: left;
+      font-size: 0.96rem;
+      font-weight: 500;
+      color: var(--text-medium);
+      transition: all var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+    }
+    .quiz-option:hover:not(.disabled) {
+      border-color: var(--ocean-blue);
+      background: rgba(106,191,232,0.08);
+      transform: translateX(4px);
+    }
+    .quiz-option .opt-letter {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      background: var(--sky-blue);
+      color: var(--deep-ocean);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+      transition: all var(--transition);
+    }
+    .quiz-option.correct { border-color: var(--mint-green); background: #E8F8F0; animation: correctPop 0.4s ease; }
+    .quiz-option.correct .opt-letter { background: var(--mint-green); }
+    .quiz-option.incorrect { border-color: #F0B0B0; background: #FFF0F0; animation: shake 0.4s ease; }
+    .quiz-option.incorrect .opt-letter { background: #F0B0B0; }
+    .quiz-option.disabled { cursor: default; opacity: 0.7; }
+    @keyframes correctPop {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      75% { transform: translateX(6px); }
+    }
+
+    .quiz-explanation {
+      margin-top: 18px;
+      padding: 18px 22px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, #F0F8FF, #FFF9E6);
+      border-left: 4px solid var(--ocean-blue);
+      font-size: 0.93rem;
+      color: var(--text-medium);
+      animation: slideIn 0.3s ease;
+      line-height: 1.65;
+    }
+    .quiz-explanation strong { color: var(--deep-ocean); }
+
+    .quiz-actions { display: flex; gap: 12px; margin-top: 22px; flex-wrap: wrap; }
+    .quiz-assist-bar { display: flex; gap: 10px; margin-top: 24px; flex-wrap: wrap; }
+    .assist-btn {
+      padding: 11px 22px;
+      border-radius: var(--radius-full);
+      background: white;
+      border: 2px solid var(--sky-blue);
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--deep-ocean);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      transition: all var(--transition);
+    }
+    .assist-btn:hover:not(:disabled) { background: var(--sky-blue); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+    .assist-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    .quiz-result { text-align: center; padding: 40px 24px; }
+    .quiz-result h1 {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: var(--deep-ocean);
+      margin-bottom: 8px;
+    }
+    .result-score {
+      font-family: var(--font-display);
+      font-size: 4rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--ocean-blue), var(--deep-ocean));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin: 16px 0;
+      filter: drop-shadow(0 4px 20px rgba(106,191,232,0.4));
+      animation: scoreScale 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes scoreScale {
+      from { transform: scale(0.5); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .result-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin: 28px 0; }
+    .result-stat {
+      background: white;
+      border-radius: var(--radius-sm);
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
+      transition: transform var(--transition);
+    }
+    .result-stat:hover { transform: translateY(-3px); }
+    .result-stat .val { font-size: 1.6rem; font-weight: 900; color: var(--deep-ocean); }
+    .result-stat .lbl { font-size: 0.78rem; color: var(--text-light); font-weight: 600; margin-top: 4px; }
+    .result-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 32px; }
+
+    /* ============ LIBRARY ============ */
+    .library-container { padding: 40px 0 80px; }
+    .library-search { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+    .library-search input {
+      flex: 1;
+      min-width: 200px;
+      padding: 15px 22px;
+      border-radius: var(--radius-full);
+      border: 2px solid var(--sky-blue);
+      font-family: inherit;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color var(--transition);
+      background: white;
+    }
+    .library-search input:focus { border-color: var(--ocean-blue); box-shadow: 0 0 0 4px rgba(106,191,232,0.15); }
+    .category-filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 32px; }
+    .cat-filter {
+      padding: 9px 18px;
+      border-radius: var(--radius-full);
+      background: white;
+      border: 2px solid var(--sky-blue);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-medium);
+      transition: all var(--transition);
+    }
+    .cat-filter:hover, .cat-filter.active {
+      background: var(--ocean-blue);
+      color: white;
+      border-color: var(--ocean-blue);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+    }
+    .article-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+    .article-card {
+      background: white;
+      border-radius: var(--radius-md);
+      padding: 26px;
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      transition: all var(--transition);
+      border: 2px solid transparent;
+      position: relative;
+      overflow: hidden;
+    }
+    .article-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 5px; height: 100%;
+      background: linear-gradient(180deg, var(--ocean-blue), var(--soft-aqua));
+      transform: scaleY(0);
+      transform-origin: top;
+      transition: transform var(--transition);
+    }
+    .article-card:hover::before { transform: scaleY(1); }
+    .article-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); border-color: var(--sky-blue); }
+    .article-card .article-cat {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--ocean-blue);
+      margin-bottom: 10px;
+    }
+    .article-card h3 {
+      font-family: var(--font-display);
+      font-size: 1.08rem;
+      font-weight: 800;
+      color: var(--deep-ocean);
+      margin-bottom: 5px;
+    }
+    .article-card .article-en { font-size: 0.82rem; color: var(--text-light); font-style: italic; margin-bottom: 10px; }
+    .article-card p {
+      font-size: 0.87rem;
+      color: var(--text-medium);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .article-detail {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 34px;
+      box-shadow: var(--shadow-md);
+      margin-top: 24px;
+      animation: pageIn 0.35s ease;
+    }
+    .article-detail h2 { font-family: var(--font-display); font-size: 1.5rem; font-weight: 900; color: var(--deep-ocean); margin-bottom: 5px; }
+    .article-detail .article-en-detail { font-size: 0.92rem; color: var(--text-light); font-style: italic; margin-bottom: 22px; }
+    .article-detail p { font-size: 0.96rem; color: var(--text-medium); margin-bottom: 13px; line-height: 1.7; }
+    .article-detail .takeaway {
+      background: linear-gradient(135deg, #FFF9E6, #FFF3D6);
+      border-radius: var(--radius-sm);
+      padding: 18px 22px;
+      margin-top: 22px;
+      font-size: 0.93rem;
+      color: #8B6914;
+      font-weight: 700;
+      border-left: 4px solid var(--warm-sunlight);
+      line-height: 1.6;
+    }
+
+    /* ============ ACHIEVEMENTS ============ */
+    .achievements-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 18px; padding-bottom: 60px; }
+    .achievement-card {
+      background: white;
+      border-radius: var(--radius-md);
+      padding: 22px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      transition: all var(--transition);
+      border: 2px solid transparent;
+      opacity: 0.55;
+      filter: grayscale(0.85);
+      position: relative;
+      overflow: hidden;
+    }
+    .achievement-card.unlocked {
+      opacity: 1;
+      filter: none;
+      border-color: var(--warm-sunlight);
+      box-shadow: 0 4px 24px rgba(255,229,166,0.4);
+    }
+    .achievement-card.unlocked::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent, rgba(255,229,166,0.15), transparent);
+      animation: shimmerGold 3s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes shimmerGold {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    .achievement-icon {
+      width: 56px; height: 56px;
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      background: var(--pearl-white);
+      transition: all var(--transition);
+    }
+    .achievement-icon svg { width: 30px; height: 30px; color: var(--text-light); }
+    .achievement-card.unlocked .achievement-icon {
+      background: linear-gradient(135deg, var(--warm-sunlight), #FFD666);
+      box-shadow: 0 4px 16px rgba(255,229,166,0.6);
+    }
+    .achievement-card.unlocked .achievement-icon svg { color: #B8860B; }
+    .achievement-info h4 { font-family: var(--font-display); font-size: 0.98rem; font-weight: 800; color: var(--deep-ocean); margin-bottom: 4px; }
+    .achievement-info p { font-size: 0.8rem; color: var(--text-light); line-height: 1.5; }
+
+    /* ============ MISSION ============ */
+    .mission-container { padding: 40px 0 80px; }
+    .mission-task {
+      background: white;
+      border-radius: var(--radius-md);
+      padding: 26px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 20px;
+      border-left: 4px solid var(--ocean-blue);
+    }
+    .mission-task h3 {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--deep-ocean);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .mission-actions-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+    .mission-action {
+      padding: 15px;
+      border-radius: var(--radius-sm);
+      background: var(--pearl-white);
+      border: 2px solid transparent;
+      font-size: 0.87rem;
+      font-weight: 600;
+      color: var(--text-medium);
+      text-align: left;
+      transition: all var(--transition);
+      cursor: pointer;
+      line-height: 1.5;
+    }
+    .mission-action:hover { border-color: var(--sky-blue); transform: translateY(-2px); }
+    .mission-action.correct-choice { border-color: var(--mint-green); background: #E8F8F0; animation: correctPop 0.4s ease; }
+    .mission-action.wrong-choice { border-color: #F0B0B0; background: #FFF0F0; animation: shake 0.4s ease; }
+    .mission-action.disabled { cursor: default; opacity: 0.7; }
+
+    .final-message-box {
+      text-align: center;
+      padding: 70px 24px;
+      background: linear-gradient(135deg, var(--sky-blue), var(--soft-aqua));
+      border-radius: var(--radius-lg);
+      margin: 40px 0;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+    .final-message-box::before {
+      content: '';
+      position: absolute;
+      top: -100px; right: -100px;
+      width: 300px; height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,229,166,0.5), transparent 70%);
+      animation: sunPulse 6s ease-in-out infinite;
+    }
+    .final-message-box h1 {
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 4.5vw, 3rem);
+      font-weight: 900;
+      color: var(--deep-ocean);
+      margin-bottom: 14px;
+      position: relative;
+    }
+    .final-message-box p {
+      font-size: 1.05rem;
+      color: var(--deep-ocean);
+      opacity: 0.9;
+      max-width: 640px;
+      margin: 0 auto 14px;
+      font-weight: 600;
+      position: relative;
+    }
+    .final-message-box .quote {
+      font-family: var(--font-accent);
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--deep-ocean);
+      margin: 28px 0;
+      line-height: 1.5;
+      position: relative;
+    }
+
+    /* ============ FOOTER ============ */
+    .footer {
+      background: linear-gradient(180deg, var(--deep-ocean), #1a3a54);
+      color: rgba(255,255,255,0.85);
+      padding: 48px 24px 32px;
+      text-align: center;
+      margin-top: auto;
+      position: relative;
+      overflow: hidden;
+    }
+    .footer::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--ocean-blue), var(--soft-aqua), transparent);
+    }
+    .footer p { font-size: 0.87rem; margin-bottom: 8px; }
+    .footer .footer-brand {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-weight: 900;
+      color: white;
+      margin-bottom: 14px;
+      letter-spacing: 0.08em;
+    }
+
+    /* ============ TOAST ============ */
+    .toast-container {
+      position: fixed;
+      top: 90px; right: 24px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .toast {
+      background: white;
+      border-radius: var(--radius-md);
+      padding: 18px 22px;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 300px;
+      animation: toastIn 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+      border-left: 5px solid var(--warm-sunlight);
+      position: relative;
+      overflow: hidden;
+    }
+    .toast::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,229,166,0.2), transparent);
+      animation: shimmerGold 2s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateX(60px) scale(0.9); }
+      to { opacity: 1; transform: translateX(0) scale(1); }
+    }
+    .toast-icon {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--warm-sunlight), #FFD666);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(255,229,166,0.5);
+      position: relative;
+      z-index: 1;
+    }
+    .toast-icon svg { width: 24px; height: 24px; color: #B8860B; }
+    .toast > div:last-child { position: relative; z-index: 1; }
+    .toast h4 { font-family: var(--font-display); font-size: 0.95rem; font-weight: 800; color: var(--deep-ocean); }
+    .toast p { font-size: 0.8rem; color: var(--text-light); }
+
+    /* ============ SETTINGS MODAL ============ */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(40,84,119,0.45);
+      backdrop-filter: blur(8px);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      opacity: 0;
+      visibility: hidden;
+      transition: all var(--transition);
+    }
+    .modal-overlay.open { opacity: 1; visibility: visible; }
+    .modal {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 34px;
+      max-width: 460px;
+      width: 100%;
+      box-shadow: var(--shadow-lg);
+      transform: scale(0.9);
+      transition: transform var(--transition-slow);
+    }
+    .modal-overlay.open .modal { transform: scale(1); }
+    .modal h2 { font-family: var(--font-display); font-size: 1.4rem; font-weight: 900; color: var(--deep-ocean); margin-bottom: 22px; }
+    .setting-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 15px 0;
+      border-bottom: 1px solid rgba(168,221,244,0.3);
+    }
+    .setting-row label { font-size: 0.92rem; font-weight: 600; color: var(--text-medium); }
+    .toggle-switch {
+      width: 50px; height: 28px;
+      border-radius: 14px;
+      background: var(--sky-blue);
+      position: relative;
+      cursor: pointer;
+      transition: background var(--transition);
+      flex-shrink: 0;
+    }
+    .toggle-switch.on { background: var(--ocean-blue); }
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      top: 3px; left: 3px;
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: white;
+      transition: transform var(--transition);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    }
+    .toggle-switch.on::after { transform: translateX(22px); }
+
+    /* ============ SCROLL REVEAL ============ */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.34, 1.2, 0.64, 1);
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ============ CONFETTI CANVAS ============ */
+    #confettiCanvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 5000;
+      display: none;
+    }
+
+    /* ============ FLOATING AQUA BUTTON ============ */
+    .floating-aqua-btn {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--soft-aqua), var(--sky-blue));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 400;
+      box-shadow: 0 8px 24px rgba(106,191,232,0.4);
+      transition: all var(--transition);
+      opacity: 0;
+      pointer-events: none;
+      animation: mascotFloat 3s ease-in-out infinite;
+    }
+    .floating-aqua-btn.visible { opacity: 1; pointer-events: all; }
+    .floating-aqua-btn:hover { transform: scale(1.1); box-shadow: 0 12px 32px rgba(106,191,232,0.6); }
+    .floating-aqua-btn svg { width: 40px; height: 40px; }
+    .floating-aqua-btn::after {
+      content: 'Hỏi Aqua';
+      position: absolute;
+      top: -32px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--deep-ocean);
+      color: white;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      font-size: 0.72rem;
+      font-weight: 700;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition);
+    }
+    .floating-aqua-btn:hover::after { opacity: 1; }
+
+    @media (max-width: 480px) {
+      .floating-aqua-btn { width: 54px; height: 54px; bottom: 80px; left: 16px; }
+      .floating-aqua-btn svg { width: 34px; height: 34px; }
+    }
+
+    /* ============ LOADING SKELETON ============ */
+    .skeleton {
+      background: linear-gradient(90deg, #E8F4FA 25%, #F4FAFD 50%, #E8F4FA 75%);
+      background-size: 200% 100%;
+      animation: skeletonShine 1.5s infinite;
+      border-radius: var(--radius-sm);
+    }
+    @keyframes skeletonShine {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* ============ MOBILE RESPONSIVE ============ */
+    @media (max-width: 600px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .stat-card { padding: 16px 12px; }
+      .stat-value { font-size: 1.5rem; }
+      .stat-icon { width: 42px; height: 42px; margin-bottom: 10px; }
+      .chapter-hero { padding: 32px 22px; }
+      .quiz-question-card { padding: 24px 20px; }
+      .content-card { padding: 22px 18px; }
+      .interactive-box { padding: 20px 16px; }
+      .chapter-view { padding: 24px 0 60px; }
+      .section-header { margin: 44px 0 28px; }
+      .chapters-grid { gap: 16px; padding-bottom: 40px; }
+      .chapter-body { padding: 16px; }
+      .chapter-thumb { height: 150px; }
+      .aqua-panel { max-height: 80vh; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Confetti Canvas -->
+<canvas id="confettiCanvas"></canvas>
+
+<!-- Cursor Ripple Container (auto-injected) -->
+
+<!-- ============ INTRO ============ -->
+<div id="introScreen">
+  <div class="intro-sun"></div>
+  <div class="intro-clouds"></div>
+  <div class="intro-ocean"></div>
+  <div class="intro-particles" id="introParticles"></div>
+  <button class="skip-intro" onclick="skipIntro()">Bỏ qua ›</button>
+  <div class="intro-content">
+    <div class="intro-mascot" id="introMascot">
+      <svg viewBox="0 0 100 100" fill="none">
+        <defs>
+          <radialGradient id="introAquaGrad">
+            <stop offset="0%" stop-color="#FFFFFF"/>
+            <stop offset="40%" stop-color="#B9F0E8"/>
+            <stop offset="100%" stop-color="#6ABFE8"/>
+          </radialGradient>
+          <filter id="introGlow">
+            <feGaussianBlur stdDeviation="1.5" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <ellipse cx="50" cy="62" rx="34" ry="32" fill="url(#introAquaGrad)" filter="url(#introGlow)" opacity="0.95"/>
+        <ellipse cx="50" cy="60" rx="26" ry="24" fill="#A8DDF4" opacity="0.7"/>
+        <circle cx="40" cy="54" r="6.5" fill="#285477"/>
+        <circle cx="60" cy="54" r="6.5" fill="#285477"/>
+        <circle cx="42" cy="52" r="2.2" fill="white"/>
+        <circle cx="62" cy="52" r="2.2" fill="white"/>
+        <path d="M44 70 Q50 76 56 70" stroke="#285477" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+        <ellipse cx="32" cy="66" rx="5.5" ry="3.2" fill="#FFB6C1" opacity="0.6"/>
+        <ellipse cx="68" cy="66" rx="5.5" ry="3.2" fill="#FFB6C1" opacity="0.6"/>
+        <path d="M46 30 L50 18 L54 30 Z" fill="#6ABFE8" filter="url(#introGlow)"/>
+        <circle cx="50" cy="32" r="4.5" fill="#FFE5A6" opacity="0.8"/>
+      </svg>
+    </div>
+    <h1 class="intro-title">AQUARIA</h1>
+    <p class="intro-subtitle">THE ETERNAL WATER CYCLE</p>
+    <p class="intro-subtitle-vi">HÀNH TRÌNH VĨNH CỬU CỦA GIỌT NƯỚC</p>
+    <div class="intro-buttons">
+      <button class="btn btn-primary" onclick="startAdventure()">
+        <i data-lucide="droplets" style="width:20px;height:20px;"></i>
+        BẮT ĐẦU KHÁM PHÁ
+      </button>
+      <button class="btn btn-secondary" onclick="skipIntro()">
+        TÌM HIỂU DỰ ÁN
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ APP ============ -->
+<div id="app" class="hidden">
+  <nav class="navbar" role="navigation" aria-label="Main navigation" id="mainNav">
+    <div class="navbar-inner">
+      <div class="logo" onclick="navigateTo('home')" role="button" tabindex="0" aria-label="AQUARIA Home">
+        <svg viewBox="0 0 40 40" fill="none">
+          <defs>
+            <radialGradient id="logoGrad">
+              <stop offset="0%" stop-color="#B9F0E8"/>
+              <stop offset="50%" stop-color="#6ABFE8"/>
+              <stop offset="100%" stop-color="#285477"/>
+            </radialGradient>
+          </defs>
+          <circle cx="20" cy="20" r="18" fill="url(#logoGrad)"/>
+          <path d="M20 8 C20 8, 10 20, 10 26 C10 32, 14 36, 20 36 C26 36, 30 32, 30 26 C30 20, 20 8, 20 8Z" fill="white" opacity="0.92"/>
+          <circle cx="16" cy="24" r="2" fill="#6ABFE8" opacity="0.6"/>
+        </svg>
+        AQUARIA
+      </div>
+      <ul class="nav-links" id="navLinks">
+        <li><button onclick="navigateTo('home')" class="active" data-page="home">Trang chủ</button></li>
+        <li><button onclick="navigateTo('chapters')" data-page="chapters">Hành trình</button></li>
+        <li><button onclick="navigateTo('lab')" data-page="lab">Phòng thí nghiệm</button></li>
+        <li><button onclick="navigateTo('library')" data-page="library">Thư viện</button></li>
+        <li><button onclick="navigateTo('quiz')" data-page="quiz">MiniGame</button></li>
+        <li><button onclick="navigateTo('achievements')" data-page="achievements">Thành tựu</button></li>
+      </ul>
+      <div class="nav-right">
+        <div class="progress-ring" onclick="navigateTo('achievements')" title="Tiến độ tổng thể" role="button" tabindex="0">
+          <svg width="48" height="48" viewBox="0 0 48 48">
+            <circle cx="24" cy="24" r="20" fill="none" stroke="#DCEFF8" stroke-width="4"/>
+            <circle id="progressRingFill" cx="24" cy="24" r="20" fill="none" stroke="url(#progressGradient)" stroke-width="4" stroke-linecap="round" stroke-dasharray="125.6" stroke-dashoffset="125.6" style="transition: stroke-dashoffset 1s ease;"/>
+            <defs>
+              <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#6ABFE8"/>
+                <stop offset="100%" stop-color="#B9F0E8"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <span class="progress-text" id="progressText">0%</span>
+        </div>
+        <button class="icon-btn" onclick="toggleSound()" aria-label="Bật/tắt âm thanh" id="soundBtn">
+          <i data-lucide="volume-x"></i>
+        </button>
+        <button class="icon-btn" onclick="openSettings()" aria-label="Cài đặt">
+          <i data-lucide="settings"></i>
+        </button>
+        <button class="icon-btn mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">
+          <i data-lucide="menu"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HOME -->
+  <div class="page active" id="page-home">
+    <section class="hero">
+      <div class="hero-clouds"></div>
+      <div class="hero-canvas-wrap">
+        <canvas id="heroCanvas"></canvas>
+        <div class="hero-fallback hidden" id="heroFallback">
+          <div class="sphere-2d"></div>
+        </div>
+      </div>
+      <div class="container" style="position:relative;z-index:2;">
+        <div class="hero-content">
+          <div class="hero-badge">
+            <i data-lucide="sparkles" style="width:14px;height:14px;"></i>
+            Thế giới Anime Fantasy Giáo dục
+          </div>
+          <h1 class="hero-title">CHÀO MỪNG ĐẾN VỚI<br><span>AQUARIA!</span></h1>
+          <p class="hero-desc">Khám phá hành trình kỳ diệu của nước qua thế giới Anime Fantasy. Học tập, thí nghiệm và phiêu lưu cùng Aqua — linh hồn nước nhỏ bé.</p>
+          <div class="hero-actions">
+            <button class="btn btn-primary" onclick="continueJourney()">
+              <i data-lucide="play" style="width:18px;height:18px;"></i>
+              TIẾP TỤC HÀNH TRÌNH
+            </button>
+            <button class="btn btn-secondary" onclick="navigateTo('lab')">
+              <i data-lucide="rotate-3d" style="width:18px;height:18px;"></i>
+              PHÒNG THÍ NGHIỆM
+            </button>
+            <button class="btn btn-ghost" onclick="navigateTo('quiz')">
+              <i data-lucide="brain" style="width:18px;height:18px;"></i>
+              THỬ THÁCH
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="stats-grid" id="statsGrid">
+      <div class="stat-card">
+        <div class="stat-icon"><i data-lucide="book-open"></i></div>
+        <div class="stat-value" id="statChapters">0/10</div>
+        <div class="stat-label">Chương đã hoàn thành</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon"><i data-lucide="help-circle"></i></div>
+        <div class="stat-value" id="statQuestions">0</div>
+        <div class="stat-label">Câu hỏi đã trả lời</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon"><i data-lucide="star"></i></div>
+        <div class="stat-value" id="statScore">0</div>
+        <div class="stat-label">Điểm tích lũy</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon"><i data-lucide="trophy"></i></div>
+        <div class="stat-value" id="statAchievements">0</div>
+        <div class="stat-label">Thành tựu đạt được</div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="section-header reveal">
+        <h2>HÀNH TRÌNH HỌC TẬP</h2>
+        <p>10 chương học tương tác, mỗi chương là một cuộc phiêu lưu khoa học</p>
+      </div>
+      <div class="chapters-grid" id="homeChaptersGrid"></div>
+    </div>
+  </div>
+
+  <!-- CHAPTERS LIST -->
+  <div class="page" id="page-chapters">
+    <div class="container" style="padding-top:40px;">
+      <div class="section-header">
+        <h2>HÀNH TRÌNH VĨNH CỬU</h2>
+        <p>Khám phá từng chương học, từ khái niệm cơ bản đến nhiệm vụ bảo vệ nguồn nước</p>
+      </div>
+      <div class="chapters-grid" id="chaptersGrid"></div>
+    </div>
+  </div>
+
+  <!-- CHAPTER DETAIL -->
+  <div class="page" id="page-chapterDetail">
+    <div class="container">
+      <div class="chapter-view" id="chapterDetailContent"></div>
+    </div>
+  </div>
+
+  <!-- LAB -->
+  <div class="page" id="page-lab">
+    <div class="container" style="padding:40px 24px 80px;">
+      <div class="section-header">
+        <h2>PHÒNG THÍ NGHIỆM NƯỚC</h2>
+        <p>Khám phá 8 giai đoạn của vòng tuần hoàn nước</p>
+      </div>
+      <div class="interactive-box" style="max-width:950px;margin:0 auto;">
+        <h3><i data-lucide="flask-conical" style="width:20px;height:20px;"></i> Vòng tuần hoàn nước tương tác</h3>
+        <p style="font-size:0.9rem;color:var(--text-light);margin-bottom:16px;">Nhấp vào từng giai đoạn để xem giải thích chi tiết. Mô phỏng mang tính khái niệm.</p>
+        <div class="clickable-locations" id="labLocations" style="grid-template-columns:repeat(auto-fill,minmax(100px,1fr));"></div>
+        <div class="location-info" id="labInfo" style="margin-top:20px;">
+          <strong>Chọn một giai đoạn</strong> để bắt đầu khám phá.
+        </div>
+        <div class="sim-canvas" id="labCanvas" style="margin-top:20px;height:300px;display:flex;align-items:center;justify-content:center;color:var(--text-light);">
+          <span>Mô phỏng 3D — Sẽ hiển thị khi bạn chọn giai đoạn</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIBRARY -->
+  <div class="page" id="page-library">
+    <div class="library-container container">
+      <div class="section-header">
+        <h2>THƯ VIỆN KIẾN THỨC</h2>
+        <p>Tra cứu các khái niệm khoa học về nước và vòng tuần hoàn</p>
+      </div>
+      <div class="library-search">
+        <input type="text" id="librarySearch" placeholder="🔍 Tìm kiếm bài viết..." oninput="filterLibrary()">
+      </div>
+      <div class="category-filters" id="categoryFilters"></div>
+      <div class="article-grid" id="articleGrid"></div>
+      <div id="articleDetail"></div>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="page" id="page-quiz">
+    <div class="quiz-container" id="quizContainer"></div>
+  </div>
+
+  <!-- ACHIEVEMENTS -->
+  <div class="page" id="page-achievements">
+    <div class="container" style="padding-top:40px;">
+      <div class="section-header">
+        <h2>THÀNH TỰU & TIẾN ĐỘ</h2>
+        <p>Đánh dấu chặng đường khám phá của bạn</p>
+      </div>
+      <div class="achievements-grid" id="achievementsGrid"></div>
+    </div>
+  </div>
+
+  <!-- MISSION -->
+  <div class="page" id="page-mission">
+    <div class="container mission-container">
+      <div class="section-header">
+        <h2>NHIỆM VỤ MÔI TRƯỜNG</h2>
+        <p>Hành động của bạn hôm nay bảo vệ nguồn nước ngày mai</p>
+      </div>
+      <div id="missionContent"></div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-brand">AQUARIA</div>
+    <p>Hành trình vĩnh cửu của giọt nước — Giáo dục vì một tương lai bền vững</p>
+    <p style="font-size:0.75rem;opacity:0.6;margin-top:12px;">© 2024 AQUARIA. Nội dung khoa học tham khảo từ USGS, NOAA, NASA.</p>
+  </footer>
+</div>
+
+<!-- Aqua Floating Button -->
+<button class="floating-aqua-btn" id="floatingAquaBtn" onclick="openAqua()" aria-label="Hỏi Aqua">
+  <svg viewBox="0 0 100 100" fill="none">
+    <ellipse cx="50" cy="60" rx="30" ry="28" fill="#B9F0E8"/>
+    <ellipse cx="50" cy="58" rx="24" ry="22" fill="#A8DDF4"/>
+    <circle cx="40" cy="52" r="5.5" fill="#285477"/>
+    <circle cx="60" cy="52" r="5.5" fill="#285477"/>
+    <circle cx="42" cy="50" r="2" fill="white"/>
+    <circle cx="62" cy="50" r="2" fill="white"/>
+    <path d="M44 68 Q50 74 56 68" stroke="#285477" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M46 30 L50 20 L54 30 Z" fill="#6ABFE8"/>
+  </svg>
+</button>
+
+<!-- AQUA PANEL -->
+<div class="aqua-panel" id="aquaPanel" role="dialog" aria-label="Trợ lý Aqua">
+  <div class="aqua-header">
+    <div class="aqua-avatar">
+      <svg viewBox="0 0 100 100" fill="none">
+        <ellipse cx="50" cy="60" rx="28" ry="26" fill="#A8DDF4"/>
+        <circle cx="40" cy="52" r="5" fill="#285477"/>
+        <circle cx="60" cy="52" r="5" fill="#285477"/>
+        <circle cx="42" cy="50" r="1.8" fill="white"/>
+        <circle cx="62" cy="50" r="1.8" fill="white"/>
+        <path d="M44 68 Q50 74 56 68" stroke="#285477" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <path d="M46 28 L50 18 L54 28 Z" fill="#6ABFE8"/>
+      </svg>
+    </div>
+    <div class="aqua-header-info">
+      <h4>AQUA</h4>
+      <span>Linh hồn nước — Trợ lý học tập</span>
+    </div>
+    <button class="aqua-close" onclick="closeAqua()" aria-label="Đóng">
+      <i data-lucide="x" style="width:18px;height:18px;"></i>
+    </button>
+  </div>
+  <div class="aqua-messages" id="aquaMessages"></div>
+  <div class="aqua-quick-questions" id="aquaQuickQuestions"></div>
+  <div class="aqua-input-area">
+    <input type="text" id="aquaInput" placeholder="Hỏi Aqua về nước..." onkeydown="if(event.key==='Enter')sendAquaMessage()">
+    <button class="aqua-send" onclick="sendAquaMessage()" aria-label="Gửi">
+      <i data-lucide="send" style="width:16px;height:16px;"></i>
+    </button>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="modal-overlay" id="settingsModal" onclick="if(event.target===this)closeSettings()">
+  <div class="modal">
+    <h2><i data-lucide="settings" style="width:22px;height:22px;vertical-align:middle;margin-right:8px;"></i> Cài đặt</h2>
+    <div class="setting-row">
+      <label>Âm thanh</label>
+      <div class="toggle-switch" id="soundToggle" onclick="toggleSoundSetting()" role="switch" tabindex="0"></div>
+    </div>
+    <div class="setting-row">
+      <label>Giảm chuyển động</label>
+      <div class="toggle-switch" id="motionToggle" onclick="toggleMotionSetting()" role="switch" tabindex="0"></div>
+    </div>
+    <div class="setting-row" style="border-bottom:none;">
+      <label>Đặt lại tiến trình</label>
+      <button class="btn btn-sm btn-ghost" style="color:#C0562A;" onclick="resetProgress()">Đặt lại</button>
+    </div>
+    <div style="margin-top:22px;text-align:right;">
+      <button class="btn btn-secondary btn-sm" onclick="closeSettings()">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+/* ============================================================
+   AQUARIA — UPGRADED APPLICATION CORE
+   ============================================================ */
+
+/* ============ STORAGE & STATE ============ */
+const STORAGE_KEY = 'aquaria_progress_v2';
+
+const defaultProgress = {
+  introSeen: false,
+  chaptersCompleted: [],
+  quiz: { answered: 0, correct: 0, wrong: 0, skipped: 0, score: 0, highestLevel: 0, bestRun: 0 },
+  achievements: [],
+  missionCompleted: false,
+  soundEnabled: false,
+  motionReduced: false
+};
+
+let progress = loadProgress();
+function loadProgress() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return { ...defaultProgress, ...parsed, quiz: { ...defaultProgress.quiz, ...(parsed.quiz || {}) } };
+    }
+  } catch(e) { console.warn('Load failed', e); }
+  return JSON.parse(JSON.stringify(defaultProgress));
+}
+function saveProgress() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(progress)); updateProgressUI(); }
+  catch(e) { console.warn('Save failed', e); }
+}
+
+/* ============ CHAPTERS DATA ============ */
+const chapters = [
+  {
+    id: 1, title: 'SỰ TRIỆU HỒI THẦN THÁNH', topic: 'Giới thiệu vòng tuần hoàn nước', difficulty: 1,
+    color: '#B9F0E8', icon: 'droplets',
+    desc: 'Aqua được triệu hồi bởi Đấng Sáng Tạo vào Aquaria. Khám phá nước tồn tại ở đâu trên Trái Đất.',
+    story: 'Trong khoảnh khắc ánh sáng xanh tràn ngập, Aqua — linh hồn nước nhỏ bé — mở mắt giữa đại dương bao la. Đấng Sáng Tạo thì thầm: "Con là một phần của vòng tuần hoàn vĩnh cửu..."',
+    content: [
+      { heading: 'Vòng tuần hoàn nước là gì?', text: 'Vòng tuần hoàn nước là sự di chuyển liên tục của nước trên, dưới và trong bề mặt Trái Đất. Nước bay hơi từ đại dương, ngưng tụ thành mây, rơi xuống thành mưa, rồi lại trở về đại dương và lặp lại.' },
+      { heading: 'Nước tồn tại ở đâu?', text: 'Nước có mặt ở khắp nơi: đại dương (97% tổng lượng nước), sông hồ, băng tuyết, trong không khí dưới dạng hơi nước, và trong lòng đất dưới dạng nước ngầm.' },
+      { heading: 'Vai trò của Mặt Trời và trọng lực', text: 'Mặt Trời cung cấp năng lượng chính cho sự bay hơi. Trọng lực kéo nước mưa rơi xuống và điều khiển dòng chảy từ cao xuống thấp.' }
+    ],
+    interactive: 'locations',
+    locations: [
+      { name: 'Đại dương', info: 'Đại dương chứa khoảng 97% lượng nước trên Trái Đất. Đây là nguồn cung cấp hơi nước lớn nhất cho khí quyển.' },
+      { name: 'Sông', info: 'Sông là dòng nước chảy thường xuyên trên bề mặt đất, dẫn nước từ nơi cao xuống biển hoặc hồ.' },
+      { name: 'Hồ', info: 'Hồ là vùng nước đọng tự nhiên trong lòng đất. Hồ nước ngọt cung cấp nước cho con người và sinh vật.' },
+      { name: 'Khí quyển', info: 'Hơi nước trong khí quyển là nước ở thể khí. Mặc dù chỉ chiếm một phần nhỏ tổng lượng nước, nó đóng vai trò quan trọng trong thời tiết.' },
+      { name: 'Sông băng', info: 'Sông băng là khối băng lớn di chuyển chậm. Băng tan từ sông băng cung cấp nước cho nhiều con sông.' },
+      { name: 'Nước ngầm', info: 'Nước ngầm là nước chứa trong các lỗ rỗng của đất đá dưới mặt đất. Đây là nguồn nước ngọt quan trọng.' }
+    ],
+    summary: 'Nước di chuyển liên tục qua các môi trường khác nhau nhờ năng lượng Mặt Trời và trọng lực, tạo nên vòng tuần hoàn vĩnh cửu.',
+    assessment: [{ q: 'Nguồn năng lượng chính thúc đẩy vòng tuần hoàn nước là gì?', options: ['Mặt Trăng', 'Mặt Trời', 'Gió', 'Núi lửa'], correct: 1, explain: 'Mặt Trời cung cấp năng lượng để nước bay hơi.' }]
+  },
+  {
+    id: 2, title: 'SỨC MẠNH ÁNH DƯƠNG', topic: 'Sự bay hơi', difficulty: 1,
+    color: '#FFE5A6', icon: 'sun',
+    desc: 'Tìm hiểu quá trình nước lỏng chuyển thành hơi nước dưới tác động của năng lượng Mặt Trời.',
+    story: 'Ánh nắng đầu tiên chiếu rọi mặt biển. Những giọt nước long lanh bắt đầu tan vào không khí. Aqua mỉm cười: "Đây là phép màu của Mặt Trời..."',
+    content: [
+      { heading: 'Sự bay hơi là gì?', text: 'Bay hơi là quá trình nước lỏng chuyển thành hơi nước khi hấp thụ đủ năng lượng. Diễn ra ngay cả ở nhiệt độ thường, chủ yếu từ bề mặt nước.' },
+      { heading: 'Các yếu tố ảnh hưởng', text: 'Nhiệt độ cao, gió mạnh, diện tích bề mặt lớn đều làm tăng tốc độ bay hơi.' }
+    ],
+    interactive: 'sunSlider',
+    summary: 'Bay hơi là bước đầu tiên của vòng tuần hoàn, do Mặt Trời cung cấp năng lượng.',
+    assessment: [{ q: 'Bay hơi là quá trình gì?', options: ['Nước lỏng thành hơi nước', 'Hơi nước thành nước lỏng', 'Nước lỏng thành băng', 'Băng tan thành nước'], correct: 0, explain: 'Bay hơi là sự chuyển đổi từ thể lỏng sang thể khí.' }]
+  },
+  {
+    id: 3, title: 'BÍ MẬT KHU RỪNG', topic: 'Sự thoát hơi nước', difficulty: 2,
+    color: '#BFE8D1', icon: 'leaf',
+    desc: 'Khám phá cách thực vật hút nước từ đất và thải hơi nước qua lá.',
+    story: 'Aqua bay vào khu rừng xanh mát. Cây cối thì thầm khi những dòng nước nhỏ chảy lên thân cây, tỏa vào không khí từ những chiếc lá...',
+    content: [
+      { heading: 'Thoát hơi nước là gì?', text: 'Thoát hơi nước là quá trình thực vật hấp thụ nước từ đất qua rễ, vận chuyển lên lá và thải hơi nước ra không khí chủ yếu qua các lỗ khí (stomata).' },
+      { heading: 'Vai trò', text: 'Thoát hơi nước đóng góp một lượng lớn hơi nước vào khí quyển và giúp vận chuyển chất khoáng, điều hòa nhiệt độ cây.' }
+    ],
+    interactive: 'plantDiagram',
+    summary: 'Thực vật là một phần quan trọng của vòng tuần hoàn nước, giải phóng hơi nước qua lá.',
+    assessment: [{ q: 'Thoát hơi nước chủ yếu xảy ra qua bộ phận nào?', options: ['Rễ', 'Thân', 'Lá (khí khổng)', 'Hoa'], correct: 2, explain: 'Hơi nước thoát ra chủ yếu qua các khí khổng trên bề mặt lá.' }]
+  },
+  {
+    id: 4, title: 'VƯƠNG QUỐC MÂY', topic: 'Sự ngưng tụ', difficulty: 2,
+    color: '#DCD7F8', icon: 'cloud',
+    desc: 'Hơi nước gặp lạnh, ngưng tụ thành những giọt nước nhỏ li ti tạo nên mây.',
+    story: 'Aqua ngước nhìn bầu trời. Hơi nước từ biển và rừng đang gặp không khí lạnh, dần dần tụ lại thành những đám mây trắng xốp...',
+    content: [
+      { heading: 'Ngưng tụ là gì?', text: 'Ngưng tụ là quá trình hơi nước chuyển thành nước lỏng (hoặc băng) khi gặp không khí lạnh. Các hạt nước nhỏ li ti tạo nên mây và sương mù.' },
+      { heading: 'Sự thật khoa học', text: 'Mây không phải là hơi nước. Hơi nước vô hình. Những gì ta thấy là các giọt nước lỏng hoặc tinh thể băng nhỏ li ti lơ lửng.' }
+    ],
+    interactive: 'coolingSlider',
+    summary: 'Ngưng tụ biến hơi nước vô hình thành mây hữu hình — bước quan trọng trước khi mưa.',
+    assessment: [{ q: 'Mây được cấu tạo chủ yếu từ gì?', options: ['Hơi nước vô hình', 'Các giọt nước lỏng hoặc tinh thể băng nhỏ', 'Không khí khô', 'Bụi bẩn'], correct: 1, explain: 'Mây gồm các hạt nước lỏng hoặc băng li ti. Hơi nước thực sự là vô hình.' }]
+  },
+  {
+    id: 5, title: 'MƯA VÀ SỰ THỨC TỈNH', topic: 'Sự giáng thủy', difficulty: 3,
+    color: '#A8DDF4', icon: 'cloud-rain',
+    desc: 'Khám phá cách mưa, tuyết và mưa đá hình thành khi các giọt nước trong mây lớn dần.',
+    story: 'Những đám mây nặng dần. Aqua reo lên khi những giọt mưa đầu tiên rơi xuống mặt biển, tạo nên những vòng sóng lan xa...',
+    content: [
+      { heading: 'Giáng thủy là gì?', text: 'Giáng thủy là nước rơi từ mây xuống mặt đất dưới dạng mưa, tuyết, mưa đá hoặc mưa tuyết. Các giọt nước trong mây va chạm và lớn dần cho đến khi trọng lực kéo xuống.' },
+      { heading: 'Các dạng giáng thủy', text: 'Mưa hình thành khi giọt nước lỏng rơi xuống. Tuyết hình thành khi hơi ẩm kết tinh thành tinh thể băng và không tan trên đường rơi. Mưa đá hình thành khi các giọt nước bị đẩy lên xuống trong mây dông, đóng băng thành hạt băng.' }
+    ],
+    interactive: 'precipSelector',
+    summary: 'Giáng thủy đưa nước từ khí quyển trở về mặt đất, khép kín một vòng tuần hoàn.',
+    assessment: [{ q: 'Tuyết hình thành khi nào?', options: ['Hơi nước ngưng tụ thành nước lỏng rồi đóng băng', 'Hơi ẩm kết tinh thành tinh thể băng ở nhiệt độ thấp', 'Mưa đá tan ra', 'Nước biển bốc hơi'], correct: 1, explain: 'Tuyết là các tinh thể băng hình thành trực tiếp từ hơi ẩm trong điều kiện lạnh.' }]
+  },
+  {
+    id: 6, title: 'DÒNG CHẢY VÔ TẬN', topic: 'Dòng chảy mặt', difficulty: 3,
+    color: '#6ABFE8', icon: 'waves',
+    desc: 'Nước mưa chảy trên mặt đất theo địa hình, tạo thành suối, sông và trở về biển.',
+    story: 'Những giọt mưa chạm đất, tạo thành những dòng suối nhỏ len lỏi qua sườn đồi. Aqua bay theo dòng nước, cùng nó hòa vào sông lớn...',
+    content: [
+      { heading: 'Dòng chảy mặt là gì?', text: 'Dòng chảy mặt là nước mưa hoặc băng tan chảy trên bề mặt đất, không thấm ngay vào đất. Nó di chuyển theo địa hình từ cao xuống thấp, tập trung thành các dòng suối, sông.' },
+      { heading: 'Yếu tố ảnh hưởng', text: 'Độ dốc địa hình, đặc điểm đất (thấm nhiều hay ít), thảm thực vật và cường độ mưa đều ảnh hưởng đến dòng chảy mặt.' }
+    ],
+    interactive: 'terrainSlider',
+    summary: 'Dòng chảy mặt là con đường nhanh nhất đưa nước mưa trở về các thủy vực lớn.',
+    assessment: [{ q: 'Dòng chảy mặt phụ thuộc vào yếu tố nào?', options: ['Nhiệt độ không khí', 'Độ dốc địa hình và đặc điểm đất', 'Tốc độ gió', 'Lượng mây'], correct: 1, explain: 'Địa hình dốc và đất ít thấm làm tăng dòng chảy mặt.' }]
+  },
+  {
+    id: 7, title: 'VƯƠNG QUỐC DƯỚI LÒNG ĐẤT', topic: 'Thấm và nước ngầm', difficulty: 4,
+    color: '#BFE8D1', icon: 'layers',
+    desc: 'Nước thấm qua các lớp đất đá, tích tụ trong các tầng chứa nước ngầm.',
+    story: 'Aqua lặn xuống lòng đất, nơi những dòng nước âm thầm thấm qua các lớp cát sỏi, tạo nên những túi nước ngầm kỳ diệu...',
+    content: [
+      { heading: 'Thấm là gì?', text: 'Thấm là quá trình nước trên mặt đất đi vào trong đất qua các lỗ rỗng. Tốc độ thấm phụ thuộc vào loại đất, độ ẩm và thảm thực vật.' },
+      { heading: 'Nước ngầm và tầng chứa nước', text: 'Nước ngầm là nước chứa trong các lỗ rỗng của đất đá dưới mặt đất. Tầng chứa nước là một lớp đất đá thấm nước có thể cung cấp nước cho giếng và suối. Nước ngầm di chuyển rất chậm, có thể mất hàng trăm năm.' }
+    ],
+    interactive: 'soilCross',
+    summary: 'Nước ngầm là nguồn tài nguyên quý giá, tích trữ nước ngọt dưới lòng đất.',
+    assessment: [{ q: 'Tầng chứa nước (aquifer) là gì?', options: ['Một loại đá không thấm nước', 'Lớp đất đá thấm nước có thể chứa và cung cấp nước', 'Một dòng sông ngầm', 'Một loại mây'], correct: 1, explain: 'Aquifer là tầng đất đá có độ rỗng và thấm cho phép chứa và truyền nước.' }]
+  },
+  {
+    id: 8, title: 'KHO BÁU CỦA NƯỚC', topic: 'Tập trung và trữ nước', difficulty: 4,
+    color: '#A8DDF4', icon: 'database',
+    desc: 'Khám phá các hồ chứa nước khổng lồ trên Trái Đất và thời gian nước lưu lại.',
+    story: 'Aqua du hành qua đại dương mênh mông, những hồ nước trong vắt, và những dòng sông băng ngàn năm. "Mỗi nơi đều giữ nước theo cách riêng..."',
+    content: [
+      { heading: 'Các hồ chứa nước', text: 'Đại dương là hồ chứa lớn nhất (97%). Băng và tuyết chiếm phần lớn nước ngọt. Nước ngầm là nguồn nước ngọt lớn nhất có thể khai thác. Hồ và sông chỉ chiếm phần nhỏ nhưng rất quan trọng cho hệ sinh thái.' },
+      { heading: 'Thời gian lưu nước', text: 'Nước có thể lưu lại trong các hồ chứa với thời gian rất khác nhau: từ vài ngày trong khí quyển đến hàng nghìn năm trong sông băng và nước ngầm sâu.' }
+    ],
+    interactive: 'reservoirExplore',
+    summary: 'Trái Đất có nhiều hồ chứa nước, mỗi loại có vai trò và thời gian lưu nước khác nhau.',
+    assessment: [{ q: 'Hồ chứa nước lớn nhất trên Trái Đất là gì?', options: ['Sông Amazon', 'Đại dương', 'Hồ Baikal', 'Nước ngầm'], correct: 1, explain: 'Đại dương chứa khoảng 97% tổng lượng nước trên Trái Đất.' }]
+  },
+  {
+    id: 9, title: 'VÒNG TUẦN HOÀN VĨNH CỬU', topic: 'Kết nối các quá trình', difficulty: 5,
+    color: '#DCD7F8', icon: 'refresh-cw',
+    desc: 'Tổng hợp tất cả các quá trình thành một hệ thống liên kết chặt chẽ.',
+    story: 'Aqua đứng giữa trung tâm, nhìn thấy toàn bộ vòng tuần hoàn: từ biển cả đến mây trời, từ mưa đến sông suối, từ lòng đất đến đại dương. Mọi thứ đều kết nối...',
+    content: [
+      { heading: 'Hệ thống kết nối', text: 'Vòng tuần hoàn nước không phải là một chuỗi tuyến tính. Nước có thể đi qua nhiều con đường khác nhau: từ mưa, một phần chảy trên mặt đất, một phần thấm xuống đất, một phần bốc hơi trở lại khí quyển. Không phải mọi phân tử nước đều phải đi qua tất cả các giai đoạn.' },
+      { heading: 'Tầm quan trọng', text: 'Hiểu được sự kết nối này giúp chúng ta thấy được tác động của con người lên một phần của chu trình sẽ ảnh hưởng đến toàn bộ hệ thống.' }
+    ],
+    interactive: 'fullCycle',
+    summary: 'Vòng tuần hoàn nước là một mạng lưới liên kết, không phải một đường thẳng.',
+    assessment: [{ q: 'Phát biểu nào đúng về vòng tuần hoàn nước?', options: ['Mọi phân tử nước phải đi qua tất cả các giai đoạn', 'Nước chỉ bay hơi từ đại dương', 'Nước có thể đi theo nhiều con đường khác nhau', 'Vòng tuần hoàn chỉ xảy ra trên biển'], correct: 2, explain: 'Nước có thể đi qua nhiều con đường và không nhất thiết phải trải qua mọi giai đoạn.' }]
+  },
+  {
+    id: 10, title: 'NHIỆM VỤ CUỐI CÙNG', topic: 'Bảo tồn nước & trách nhiệm', difficulty: 5,
+    color: '#FFE5A6', icon: 'shield',
+    desc: 'Hành động bảo vệ nguồn nước — từ cá nhân đến cộng đồng.',
+    story: 'Aqua nhìn thế giới với ánh mắt nghiêm túc: "Vòng tuần hoàn luôn tiếp diễn, nhưng nguồn nước sạch không phải là vô tận. Hãy giúp ta bảo vệ Aquaria!"',
+    content: [
+      { heading: 'Thách thức', text: 'Ô nhiễm nước, khan hiếm nước ngọt, sử dụng lãng phí, phá rừng và biến đổi khí hậu đang đe dọa nguồn nước sạch. Mặc dù nước tuần hoàn, nhưng nước sạch có thể bị ô nhiễm hoặc phân bố không đều.' },
+      { heading: 'Hành động', text: 'Bảo vệ nguồn nước bao gồm: giảm ô nhiễm, sử dụng nước tiết kiệm, bảo vệ rừng và hệ sinh thái, hỗ trợ tái chế và xử lý nước thải.' }
+    ],
+    interactive: 'missionGame',
+    summary: 'Bảo vệ nước là bảo vệ sự sống. Mỗi hành động nhỏ đều có ý nghĩa.',
+    assessment: [{ q: 'Tại sao cần bảo vệ nguồn nước ngọt?', options: ['Vì nước ngọt chiếm phần lớn tổng lượng nước', 'Vì nước ngọt có thể bị ô nhiễm và không phân bố đều', 'Vì nước không tuần hoàn', 'Vì đại dương cạn kiệt'], correct: 1, explain: 'Nước ngọt chỉ chiếm tỷ lệ nhỏ và dễ bị ô nhiễm, cần được bảo vệ.' }]
+  }
+];
+
+/* ============ CHAPTER SVG ILLUSTRATIONS ============ */
+function getChapterArt(chapterId, color) {
+  const arts = {
+    1: `<svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid slice">
+      <defs><radialGradient id="ch1sky" cx="50%" cy="30%"><stop offset="0%" stop-color="#FFE5A6"/><stop offset="100%" stop-color="#A8DDF4"/></radialGradient></defs>
+      <rect width="200" height="200" fill="url(#ch1sky)"/>
+      <circle cx="150" cy="50" r="22" fill="#FFE5A6" opacity="0.9"/>
+      <ellipse cx="100" cy="180" rx="120" ry="40" fill="#6ABFE8"/>
+      <path d="M30 140 Q50 120 70 140 T110 140 T150 140" stroke="#F8FCFF" stroke-width="3" fill="none" opacity="0.7"/>
+      <circle cx="70" cy="120" r="14" fill="#B9F0E8" opacity="0.8"/>
+      <circle cx="70" cy="120" r="10" fill="#6ABFE8"/>
+      <ellipse cx="130" cy="130" rx="25" ry="12" fill="#BFE8D1"/>
+    </svg>`,
+    2: `<svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid slice">
+      <rect width="200" height="200" fill="#FFE5A6"/>
+      <circle cx="100" cy="60" r="40" fill="#FFD666" opacity="0.9"/>
+      <circle cx="100" cy="60" r="55" fill="#FFE5A6" opacity="0.4"/>
+      <rect y="130" width="200" height="70" fill="#6ABFE8"/>
+      <path d="M0 130 Q50 120 100 130 T200 130" stroke="#A8DDF4" stroke-width="3" fill="none"/>
+      <circle cx="60" cy="100" r="4" fill="#F8FCFF" opacity="0.8"/>
+      <circle cx="80" cy="90" r="3" fill="#F8FCFF" opacity="0.8"/>
+      <circle cx="120" cy="95" r="4" fill="#F8FCFF" opacity="0.8"/>
+      <circle cx="140" cy="105" r="3" fill="#F8FCFF" opacity="0.8"/>
+    </svg>`,
+    3: `<svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid slice">
+      <rect width="200" height="200" fill="#BFE8D1"/>
+      <rect y="160" width="200" height="40" fill="#8B6914" opacity="0.6"/>
+      <rect x="95" y="60" width="10" height="100" fill="#8B6914" rx="3"/>
+      <ellipse cx="100" cy="70" rx="65" ry="45" fill="#4A9B5E" opacity="0.85"/>
+      <ellipse cx="60" cy="80" rx="35" ry="22" fill="#6BBF7E"/>
+      <ellipse cx="140" cy="80" rx="35" ry="22" fill="#6BBF7E"/>
+      <circle cx="100" cy="150" r="8" fill="#6ABFE8" opacity="0.7"/>
+      <circle cx="80" cy="120" r="3" fill="#6ABFE8"/>
+      <circle cx="120" cy="130" r="3" fill="#6ABFE8"/>
+      <circle cx="100" cy="100" r="3" fill="#6ABFE8"/>
+    </svg>`,
+    4: `<svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid slice">
+      <rect width="200" height="200" fill="#DCD7F8"/>
+      <ellipse cx="100" cy="70" rx="70" ry="35" fill="#F8FCFF"/>
+      <ellipse cx="60" cy="80" rx="40" ry="25" fill="#F8FCFF"/>
+      <ellipse cx="140" cy="80" rx="40" ry="25" fill="#F8FCFF"/>
+      <circle cx="80" cy="150" r="4" fill="#6ABFE8" opacity="0.8"/>
+      <circle cx="100" cy="160" r="5" fill="#6ABFE8" opacity="0.8"/>
+      <circle cx="120" cy="150" r="4" fill="#6ABFE8" opacity="0.8"/>
+      <circle cx="70" cy="170" r="3" fill="#6ABFE8" opacity="0.6"/>
+      <circle cx="130" cy="170" r="3" fill="#6ABFE8" opacity="0.6"/>
+    </svg>`,
+    5: `<svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid slice">
+      <rect width="200" height="200" fill="#A8DDF4"/>
+      <ellipse cx="100" cy="60" rx="70" ry="30" fill="#285477" opacity="0.7"/>
+      <ellipse cx="60" cy="70" rx="40" ry="22" fill="#285477" opacity="0.6"/>
+      <ellipse cx="140" cy="70" rx="40" ry="22" fill="#285477" opacity="0.6"/>
+      <line x1="70" y1="100" x2="65" y2="180" stroke="#6ABFE8" stroke-width="2" opacity="0.8"/>
+      <line x1="90" y1="100" x2="85" y2="180" stroke="#6ABFE8" stroke-width="2" opacity="0.8"/>
+      <line x1="110" y1="100" x2="105" y2="180" stroke="#6ABFE8" stroke-width="2" opacity="0.8"/>
+      <line x1="130" y1="100" x2="125" y2="180" stroke="#6ABFE8" stroke-width="2" opacity="0.8"/>
+      <path d="M150 40 L140 55 L150 55 L140 70" stroke="#FFE5A6" stroke-width="2.5" fill="none"/>
+    </svg>`,
+    6: `<svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid slice">
+      <rect width="200" height="200" fill="#6ABFE8"/>
+      <path d="M0 100 L60 40 L120 90 L200 30 L200 200 L0 200 Z" fill="#4A9BC8" opacity="0.5"/>
+      <path d="M0 130 L60 80 L120 120 L200 70 L200 200 L0 200 Z" fill="#285477" opacity="0.4"/>
+      <path d="M30 160 Q60 130 90 150 T150 145 T200 155" stroke="#B9F0E8" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <circle cx="100" cy="60" r="3" fill="#F8FCFF" opacity="0.8"/>
+      <circle cx="140" cy="50" r="2.5" fill="#F8FCFF" opacity="0.7"/>
+      <circle cx="60" cy="70" r="2" fill="#F8FCFF" opacity="0.6"/>
+    </svg>`,
+    7: `<svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid slice">
+      <rect y="0" width="200" height="60" fill="#BFE8D1"/>
+      <rect y="60" width="200" height="60" fill="#D4C4A8"/>
+      <rect y="120" width="200" height="40" fill="#A89070"/>
+      <rect y="160" width="200" height="40" fill="#6ABFE8" opacity="0.6"/>
+      <circle cx="60" cy="90" r="3" fill="#6ABFE8"/>
+      <circle cx="100" cy="100" r="4" fill="#6ABFE8"/>
+      <circle cx="140" cy="95" r="3" fill="#6ABFE8"/>
+      <circle cx="80" cy="180" r="4" fill="#6ABFE8"/>
+      <circle cx="120" cy="175" r="4" fill="#6ABFE8"/>
+      <circle cx="160" cy="185" r="3" fill="#6ABFE8"/>
+      <path d="M30 30 Q50 20 70 30" stroke="#6BBF7E" stroke-width="2" fill="none"/>
+    </svg>`,
+    8: `<svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid slice">
+      <circle cx="100" cy="100" r="80" fill="#F8FCFF"/>
+      <ellipse cx="100" cy="100" rx="80" ry="30" fill="#A8DDF4" opacity="0.6"/>
+      <path d="M30 100 Q50 70 80 90 T140 80 T180 100" stroke="#6ABFE8" stroke-width="3" fill="none"/>
+      <path d="M20 130 Q60 100 100 120 T180 130" stroke="#4A9BC8" stroke-width="3" fill="none"/>
+      <ellipse cx="100" cy="100" rx="40" ry="60" fill="none" stroke="#A8DDF4" stroke-width="2"/>
+      <circle cx="60" cy="80" r="8" fill="#6ABFE8"/>
+      <circle cx="140" cy="70" r="10" fill="#BFE8D1"/>
+      <circle cx="120" cy="130" r="6" fill="#DCD7F8"/>
+    </svg>`,
+    9: `<svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid slice">
+      <circle cx="100" cy="100" r="85" fill="none" stroke="#B9F0E8" stroke-width="3" stroke-dasharray="8,5"/>
+      <circle cx="100" cy="20" r="18" fill="#FFE5A6"/>
+      <circle cx="180" cy="100" r="18" fill="#DCD7F8"/>
+      <circle cx="100" cy="180" r="18" fill="#A8DDF4"/>
+      <circle cx="20" cy="100" r="18" fill="#6ABFE8"/>
+      <text x="100" y="25" text-anchor="middle" font-size="8" fill="#8B6914" font-weight="bold">BAY HƠI</text>
+      <text x="180" y="104" text-anchor="middle" font-size="8" fill="#6B4BA8" font-weight="bold">NGƯNG</text>
+      <text x="100" y="185" text-anchor="middle" font-size="8" fill="#285477" font-weight="bold">GIÁNG</text>
+      <text x="20" y="104" text-anchor="middle" font-size="8" fill="#285477" font-weight="bold">CHẢY</text>
+      <path d="M100 40 L100 60" stroke="#285477" stroke-width="2"/>
+      <path d="M160 100 L140 100" stroke="#285477" stroke-width="2"/>
+      <path d="M100 160 L100 140" stroke="#285477" stroke-width="2"/>
+      <path d="M40 100 L60 100" stroke="#285477" stroke-width="2"/>
+    </svg>`,
+    10: `<svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid slice">
+      <defs><radialGradient id="ch10bg" cx="50%" cy="40%"><stop offset="0%" stop-color="#FFE5A6"/><stop offset="100%" stop-color="#A8DDF4"/></radialGradient></defs>
+      <rect width="200" height="200" fill="url(#ch10bg)"/>
+      <circle cx="100" cy="110" r="60" fill="#6ABFE8" opacity="0.7"/>
+      <path d="M50 130 Q70 100 100 120 T150 110 T180 130" stroke="#F8FCFF" stroke-width="3" fill="none" opacity="0.8"/>
+      <path d="M70 80 Q80 60 100 70 T130 65" stroke="#BFE8D1" stroke-width="3" fill="none"/>
+      <path d="M100 40 L95 55 L105 55 Z" fill="#FFFFFF" opacity="0.9"/>
+      <circle cx="60" cy="70" r="4" fill="#F8FCFF" opacity="0.8"/>
+      <circle cx="140" cy="65" r="4" fill="#F8FCFF" opacity="0.8"/>
+      <circle cx="100" cy="50" r="3" fill="#F8FCFF" opacity="0.9"/>
+      <path d="M80 160 Q100 150 120 160" stroke="#F8FCFF" stroke-width="2" fill="none" opacity="0.7"/>
+    </svg>`
+  };
+  return arts[chapterId] || `<svg viewBox="0 0 200 200"><rect width="200" height="200" fill="${color}"/></svg>`;
+}
+
+/* ============ QUIZ QUESTIONS — 50 ============ */
+const quizQuestions = [
+  { id:1, level:1, q:'Nước chiếm khoảng bao nhiêu phần trăm bề mặt Trái Đất?', options:['50%','71%','90%','30%'], correct:1, explain:'Khoảng 71% bề mặt Trái Đất được bao phủ bởi nước, chủ yếu là đại dương.', topic:'Đại dương' },
+  { id:2, level:1, q:'Nguồn năng lượng chính của vòng tuần hoàn nước là gì?', options:['Mặt Trăng','Mặt Trời','Gió','Núi lửa'], correct:1, explain:'Mặt Trời cung cấp năng lượng để nước bay hơi từ đại dương, sông hồ và bề mặt đất.', topic:'Năng lượng' },
+  { id:3, level:1, q:'Quá trình nước lỏng chuyển thành hơi nước được gọi là gì?', options:['Ngưng tụ','Bay hơi','Đông đặc','Giáng thủy'], correct:1, explain:'Bay hơi (evaporation) là quá trình nước lỏng chuyển thành hơi nước khi hấp thụ năng lượng.', topic:'Bay hơi' },
+  { id:4, level:1, q:'Hơi nước gặp lạnh chuyển thành nước lỏng được gọi là gì?', options:['Bay hơi','Ngưng tụ','Thấm','Dòng chảy'], correct:1, explain:'Ngưng tụ (condensation) là quá trình hơi nước chuyển thành nước lỏng khi gặp không khí lạnh.', topic:'Ngưng tụ' },
+  { id:5, level:1, q:'Mây được cấu tạo chủ yếu từ gì?', options:['Hơi nước vô hình','Các giọt nước lỏng hoặc tinh thể băng nhỏ','Không khí khô','Bụi bẩn'], correct:1, explain:'Mây gồm các hạt nước lỏng hoặc băng li ti. Hơi nước thực sự là vô hình.', topic:'Mây' },
+  { id:6, level:1, q:'Nước tồn tại ở những thể nào trong tự nhiên?', options:['Chỉ thể lỏng','Chỉ thể khí','Thể lỏng, khí và rắn','Chỉ thể rắn'], correct:2, explain:'Nước tồn tại ở ba thể: lỏng (nước), khí (hơi nước) và rắn (băng/tuyết).', topic:'Trạng thái nước' },
+  { id:7, level:1, q:'Đại dương chứa khoảng bao nhiêu phần trăm tổng lượng nước trên Trái Đất?', options:['50%','75%','97%','30%'], correct:2, explain:'Đại dương chứa khoảng 97% tổng lượng nước trên Trái Đất, chủ yếu là nước mặn.', topic:'Đại dương' },
+  { id:8, level:1, q:'Quá trình nước rơi từ mây xuống mặt đất được gọi là gì?', options:['Bay hơi','Ngưng tụ','Giáng thủy','Thấm'], correct:2, explain:'Giáng thủy (precipitation) bao gồm mưa, tuyết, mưa đá — nước rơi từ mây xuống.', topic:'Giáng thủy' },
+  { id:9, level:1, q:'Nước ngọt chiếm khoảng bao nhiêu phần trăm tổng lượng nước trên Trái Đất?', options:['30%','10%','3%','50%'], correct:2, explain:'Nước ngọt chỉ chiếm khoảng 3% tổng lượng nước, phần lớn bị đóng băng hoặc là nước ngầm.', topic:'Nước ngọt' },
+  { id:10, level:1, q:'Yếu tố nào sau đây KHÔNG ảnh hưởng đến tốc độ bay hơi?', options:['Nhiệt độ','Gió','Diện tích bề mặt','Màu của nước'], correct:3, explain:'Màu nước không ảnh hưởng trực tiếp đến tốc độ bay hơi. Nhiệt độ, gió và diện tích bề mặt là các yếu tố chính.', topic:'Bay hơi' },
+  { id:11, level:2, q:'Thoát hơi nước ở thực vật chủ yếu diễn ra qua bộ phận nào?', options:['Rễ','Thân','Lá (khí khổng)','Hoa'], correct:2, explain:'Hơi nước thoát ra chủ yếu qua các khí khổng (stomata) trên bề mặt lá.', topic:'Thoát hơi nước' },
+  { id:12, level:2, q:'Quá trình nước thấm vào đất được gọi là gì?', options:['Dòng chảy mặt','Thấm','Ngưng tụ','Bay hơi'], correct:1, explain:'Thấm (infiltration) là quá trình nước trên mặt đất đi vào trong đất qua các lỗ rỗng.', topic:'Thấm' },
+  { id:13, level:2, q:'Dòng chảy mặt là gì?', options:['Nước chảy trong lòng đất','Nước chảy trên bề mặt đất','Nước bốc hơi','Nước ngưng tụ'], correct:1, explain:'Dòng chảy mặt (surface runoff) là nước mưa hoặc băng tan chảy trên bề mặt đất, không thấm ngay vào đất.', topic:'Dòng chảy mặt' },
+  { id:14, level:2, q:'Nước ngầm là gì?', options:['Nước trong đại dương','Nước chứa trong các lỗ rỗng của đất đá dưới mặt đất','Nước trong mây','Nước trong sông'], correct:1, explain:'Nước ngầm là nước chứa trong các lỗ rỗng của đất đá dưới mặt đất, là nguồn nước ngọt quan trọng.', topic:'Nước ngầm' },
+  { id:15, level:2, q:'Tuyết hình thành khi nào?', options:['Hơi nước ngưng tụ thành nước lỏng rồi đóng băng','Hơi ẩm kết tinh thành tinh thể băng ở nhiệt độ thấp','Mưa đá tan ra','Nước biển bốc hơi'], correct:1, explain:'Tuyết là các tinh thể băng hình thành trực tiếp từ hơi ẩm trong điều kiện lạnh.', topic:'Giáng thủy' },
+  { id:16, level:2, q:'Mưa đá hình thành trong điều kiện nào?', options:['Mây tầng thấp','Mây dông có dòng đối lưu mạnh','Sương mù','Không khí khô'], correct:1, explain:'Mưa đá hình thành khi các giọt nước bị đẩy lên xuống trong mây dông, đóng băng thành hạt băng.', topic:'Giáng thủy' },
+  { id:17, level:2, q:'Sương mù là hiện tượng gì?', options:['Hơi nước ngưng tụ gần mặt đất','Mây trên cao','Mưa nhẹ','Băng tan'], correct:0, explain:'Sương mù là các giọt nước nhỏ li ti hình thành do hơi nước ngưng tụ gần mặt đất.', topic:'Ngưng tụ' },
+  { id:18, level:2, q:'Rễ cây hấp thụ nước từ đâu?', options:['Không khí','Đất','Ánh sáng','Mây'], correct:1, explain:'Rễ cây hấp thụ nước và chất khoáng từ đất.', topic:'Thoát hơi nước' },
+  { id:19, level:2, q:'Hồ chứa nước lớn nhất trên Trái Đất là gì?', options:['Sông Amazon','Đại dương','Hồ Baikal','Nước ngầm'], correct:1, explain:'Đại dương chứa khoảng 97% tổng lượng nước trên Trái Đất.', topic:'Hồ chứa' },
+  { id:20, level:2, q:'Nước trong khí quyển tồn tại chủ yếu ở dạng nào?', options:['Nước lỏng','Hơi nước','Băng','Tuyết'], correct:1, explain:'Nước trong khí quyển chủ yếu là hơi nước (thể khí), mặc dù cũng có các giọt nước lỏng trong mây.', topic:'Khí quyển' },
+  { id:21, level:3, q:'Tầng chứa nước (aquifer) là gì?', options:['Một loại đá không thấm nước','Lớp đất đá thấm nước có thể chứa và cung cấp nước','Một dòng sông ngầm','Một loại mây'], correct:1, explain:'Aquifer là tầng đất đá có độ rỗng và thấm cho phép chứa và truyền nước.', topic:'Nước ngầm' },
+  { id:22, level:3, q:'Thoát hơi nước đóng góp gì cho khí quyển?', options:['Khí oxy','Hơi nước','Khí CO2','Bụi'], correct:1, explain:'Thoát hơi nước từ thực vật giải phóng một lượng lớn hơi nước vào khí quyển.', topic:'Thoát hơi nước' },
+  { id:23, level:3, q:'Đất bão hòa nước ảnh hưởng thế nào đến dòng chảy mặt?', options:['Giảm dòng chảy mặt','Tăng dòng chảy mặt','Không ảnh hưởng','Làm nước bốc hơi nhanh hơn'], correct:1, explain:'Khi đất đã bão hòa, nước không thể thấm thêm, làm tăng dòng chảy mặt.', topic:'Dòng chảy mặt' },
+  { id:24, level:3, q:'Quá trình nào chuyển nước từ khí quyển trở lại mặt đất?', options:['Bay hơi','Ngưng tụ','Giáng thủy','Thấm'], correct:2, explain:'Giáng thủy (mưa, tuyết, mưa đá) đưa nước từ khí quyển trở lại mặt đất.', topic:'Giáng thủy' },
+  { id:25, level:3, q:'Sự khác biệt chính giữa bay hơi và thoát hơi nước là gì?', options:['Bay hơi từ thực vật, thoát hơi từ đại dương','Bay hơi từ bề mặt nước/đất, thoát hơi qua thực vật','Cả hai đều từ đại dương','Không có sự khác biệt'], correct:1, explain:'Bay hơi xảy ra từ bề mặt nước hoặc đất, còn thoát hơi nước là quá trình thực vật giải phóng hơi nước qua lá.', topic:'Bay hơi & Thoát hơi' },
+  { id:26, level:3, q:'Điều gì xảy ra với nước mưa rơi xuống khu vực có nhiều thảm thực vật?', options:['Chảy hết ra sông ngay lập tức','Thấm vào đất nhiều hơn và chảy chậm hơn','Bốc hơi hết','Đóng băng'], correct:1, explain:'Thảm thực vật giúp nước thấm vào đất tốt hơn và làm chậm dòng chảy mặt.', topic:'Thấm' },
+  { id:27, level:3, q:'Nước ngầm di chuyển như thế nào?', options:['Rất nhanh như sông','Rất chậm, có thể mất hàng trăm năm','Không di chuyển','Chỉ di chuyển khi mưa'], correct:1, explain:'Nước ngầm di chuyển rất chậm qua các lỗ rỗng của đất đá, có thể mất hàng trăm hoặc hàng nghìn năm.', topic:'Nước ngầm' },
+  { id:28, level:3, q:'Sông băng tan chảy chủ yếu do đâu?', options:['Gió','Mặt Trời','Mưa','Động đất'], correct:1, explain:'Sông băng tan chảy chủ yếu do nhiệt từ Mặt Trời và không khí ấm.', topic:'Sông băng' },
+  { id:29, level:3, q:'Hồ nước ngọt tự nhiên lớn nhất thế giới theo thể tích là gì?', options:['Hồ Superior','Hồ Baikal','Hồ Victoria','Biển Caspian'], correct:1, explain:'Hồ Baikal ở Nga là hồ nước ngọt tự nhiên lớn nhất thế giới theo thể tích.', topic:'Hồ' },
+  { id:30, level:3, q:'Quá trình ngưng tụ tạo ra mây chủ yếu nhờ vào yếu tố nào?', options:['Nhiệt độ tăng','Không khí lạnh đi','Gió mạnh','Ánh sáng'], correct:1, explain:'Khi không khí chứa hơi nước bị lạnh đi, hơi nước ngưng tụ thành các giọt nước nhỏ tạo nên mây.', topic:'Ngưng tụ' },
+  { id:31, level:4, q:'Khi một khu rừng bị chặt phá, quá trình nào bị ảnh hưởng trực tiếp nhất?', options:['Bay hơi từ đại dương','Thoát hơi nước và thấm','Giáng thủy','Ngưng tụ trên cao'], correct:1, explain:'Chặt phá rừng làm giảm thoát hơi nước và giảm khả năng thấm nước của đất, tăng dòng chảy mặt.', topic:'Thoát hơi nước' },
+  { id:32, level:4, q:'Tại sao mây không phải là hơi nước?', options:['Vì mây có màu trắng','Vì mây gồm các giọt nước lỏng hoặc băng nhỏ, không phải khí','Vì mây ở trên cao','Vì mây nặng'], correct:1, explain:'Hơi nước vô hình. Mây là các hạt nước lỏng hoặc tinh thể băng nhỏ li ti mà ta có thể nhìn thấy.', topic:'Mây' },
+  { id:33, level:4, q:'Điều gì xảy ra với dòng chảy mặt khi đất bị nén chặt bởi xe cộ?', options:['Dòng chảy mặt giảm','Dòng chảy mặt tăng','Không thay đổi','Nước thấm nhiều hơn'], correct:1, explain:'Đất bị nén chặt làm giảm độ rỗng và khả năng thấm, khiến nước chảy trên mặt nhiều hơn.', topic:'Dòng chảy mặt' },
+  { id:34, level:4, q:'Mưa đá hình thành khi nào?', options:['Mây tầng thấp','Mây dông có dòng đối lưu mạnh','Sương mù','Không khí khô'], correct:1, explain:'Mưa đá hình thành khi các giọt nước bị đẩy lên xuống trong mây dông, đóng băng thành hạt băng.', topic:'Giáng thủy' },
+  { id:35, level:4, q:'Nước ngầm có thể bị ô nhiễm từ đâu?', options:['Không bao giờ bị ô nhiễm','Từ bề mặt đất qua quá trình thấm','Chỉ từ không khí','Chỉ từ đại dương'], correct:1, explain:'Nước ngầm có thể bị ô nhiễm khi các chất ô nhiễm từ bề mặt thấm xuống theo nước.', topic:'Nước ngầm' },
+  { id:36, level:4, q:'Hiệu ứng nhà kính ảnh hưởng đến vòng tuần hoàn nước như thế nào?', options:['Không ảnh hưởng','Tăng nhiệt độ, thúc đẩy bay hơi và thay đổi mô hình mưa','Giảm bay hơi','Làm nước đóng băng'], correct:1, explain:'Nhiệt độ tăng làm tăng bay hơi và có thể thay đổi mô hình giáng thủy, gây hạn hán hoặc lũ lụt.', topic:'Biến đổi khí hậu' },
+  { id:37, level:4, q:'Tại sao nước ngầm thường sạch hơn nước mặt?', options:['Vì nước ngầm không tiếp xúc với không khí','Vì đất đá lọc tự nhiên khi nước thấm qua','Vì nước ngầm ở sâu hơn','Tất cả các lý do trên'], correct:3, explain:'Nước ngầm thường sạch hơn do được lọc tự nhiên qua các lớp đất đá và ít tiếp xúc với ô nhiễm bề mặt.', topic:'Nước ngầm' },
+  { id:38, level:4, q:'Dòng biển (hải lưu) có vai trò gì trong vòng tuần hoàn nước?', options:['Không có vai trò','Vận chuyển nước và nhiệt đi khắp đại dương','Chỉ tạo sóng','Làm nước bốc hơi'], correct:1, explain:'Hải lưu vận chuyển nước và nhiệt đi khắp đại dương, ảnh hưởng đến khí hậu và bay hơi.', topic:'Đại dương' },
+  { id:39, level:4, q:'Sự khác biệt giữa thấm và dòng chảy mặt là gì?', options:['Thấm là nước vào đất, dòng chảy mặt là nước trên bề mặt','Cả hai đều là nước trên mặt đất','Thấm là nước chảy ra sông','Dòng chảy mặt là nước vào đất'], correct:0, explain:'Thấm là quá trình nước đi vào đất; dòng chảy mặt là nước chảy trên bề mặt đất.', topic:'Thấm & Dòng chảy' },
+  { id:40, level:4, q:'Điều gì xảy ra khi mưa rơi xuống khu vực đô thị nhiều bê tông?', options:['Nước thấm nhiều hơn','Dòng chảy mặt tăng mạnh','Nước bốc hơi hết','Không có gì thay đổi'], correct:1, explain:'Bê tông không thấm nước làm giảm thấm và tăng dòng chảy mặt, có thể gây ngập úng.', topic:'Dòng chảy mặt' },
+  { id:41, level:5, q:'Tại sao vòng tuần hoàn nước được coi là một hệ thống mở?', options:['Vì nước có thể rời khỏi Trái Đất','Vì năng lượng Mặt Trời liên tục được cung cấp từ bên ngoài','Vì nước không tuần hoàn','Vì đại dương mở'], correct:1, explain:'Hệ thống mở vì năng lượng từ Mặt Trời liên tục được cung cấp, duy trì vòng tuần hoàn.', topic:'Hệ thống' },
+  { id:42, level:5, q:'Phát biểu nào đúng về mối quan hệ giữa thực vật và mưa?', options:['Thực vật không ảnh hưởng đến mưa','Thực vật giải phóng hơi nước, góp phần tạo mưa','Chỉ đại dương mới tạo mưa','Cây cối ngăn mưa'], correct:1, explain:'Thực vật giải phóng hơi nước qua thoát hơi, góp phần vào độ ẩm không khí và có thể ảnh hưởng đến mưa.', topic:'Thoát hơi nước' },
+  { id:43, level:5, q:'Nước có thể tồn tại trong khí quyển bao lâu?', options:['Vài giây','Khoảng 8-10 ngày','Hàng năm','Vĩnh viễn'], correct:1, explain:'Thời gian lưu trung bình của nước trong khí quyển khoảng 8-10 ngày.', topic:'Khí quyển' },
+  { id:44, level:5, q:'Điều gì xảy ra khi nước ngầm bị khai thác quá mức?', options:['Mực nước ngầm dâng cao','Mực nước ngầm hạ thấp, có thể gây sụt lún đất','Nước ngầm tự tái tạo ngay lập tức','Không ảnh hưởng gì'], correct:1, explain:'Khai thác quá mức làm mực nước ngầm hạ thấp, có thể gây sụt lún đất và xâm nhập mặn.', topic:'Nước ngầm' },
+  { id:45, level:5, q:'Tại sao băng tan nhanh lại ảnh hưởng đến vòng tuần hoàn nước?', options:['Không ảnh hưởng','Tăng lượng nước chảy vào đại dương, thay đổi dòng chảy và mực nước biển','Làm nước biển mặn hơn','Giảm bay hơi'], correct:1, explain:'Băng tan nhanh làm tăng dòng chảy vào đại dương, góp phần làm mực nước biển dâng và thay đổi cân bằng nước.', topic:'Biến đổi khí hậu' },
+  { id:46, level:5, q:'Quá trình nào sau đây KHÔNG trả nước trực tiếp về khí quyển?', options:['Bay hơi','Thoát hơi nước','Dòng chảy mặt','Hô hấp của sinh vật'], correct:2, explain:'Dòng chảy mặt đưa nước về sông hồ và đại dương, không trực tiếp về khí quyển.', topic:'Tổng hợp' },
+  { id:47, level:5, q:'Trong điều kiện nào thì cả bay hơi và thoát hơi nước đều mạnh?', options:['Trời lạnh, khô','Trời nóng, ẩm','Trời nóng, có gió và đủ ẩm cho cây','Trời mưa to'], correct:2, explain:'Nhiệt độ cao, gió và đủ độ ẩm cho cây quang hợp và thoát hơi là điều kiện lý tưởng cho cả hai quá trình.', topic:'Bay hơi & Thoát hơi' },
+  { id:48, level:5, q:'Tại sao nước sạch lại là nguồn tài nguyên hữu hạn dù nước tuần hoàn?', options:['Vì nước không tuần hoàn','Vì nước sạch có thể bị ô nhiễm và phân bố không đều','Vì đại dương cạn kiệt','Vì mưa không rơi'], correct:1, explain:'Dù nước tuần hoàn, nước sạch có thể bị ô nhiễm hoặc không phân bố đều theo không gian và thời gian.', topic:'Bảo tồn' },
+  { id:49, level:5, q:'Việc xây đập thủy điện ảnh hưởng đến vòng tuần hoàn nước như thế nào?', options:['Không ảnh hưởng','Thay đổi dòng chảy, giữ nước lại và ảnh hưởng đến hệ sinh thái','Làm nước bốc hơi nhanh hơn','Tăng mưa'], correct:1, explain:'Đập giữ nước lại, thay đổi dòng chảy tự nhiên và ảnh hưởng đến hệ sinh thái và cộng đồng hạ lưu.', topic:'Con người' },
+  { id:50, level:5, q:'Hành động nào sau đây giúp bảo vệ nguồn nước hiệu quả nhất?', options:['Xả nước thải chưa xử lý ra sông','Sử dụng nước tiết kiệm, bảo vệ rừng và xử lý nước thải','Chặt phá rừng để làm nông nghiệp','Khai thác nước ngầm tối đa'], correct:1, explain:'Sử dụng tiết kiệm, bảo vệ rừng và xử lý nước thải là các hành động bảo vệ nguồn nước bền vững.', topic:'Bảo tồn' }
+];
+
+/* ============ LIBRARY ============ */
+const libraryArticles = [
+  { id:1, cat:'Cơ bản', title:'Vòng tuần hoàn nước', en:'The Water Cycle', def:'Sự di chuyển liên tục của nước trên, dưới và trong bề mặt Trái Đất.', explain:'Nước bay hơi từ đại dương, sông hồ và thực vật, ngưng tụ thành mây, rơi xuống thành mưa, rồi lại trở về đại dương. Quá trình này diễn ra liên tục và là cơ sở cho sự sống.', example:'Mưa rơi xuống núi, chảy thành suối, về sông, ra biển và lại bốc hơi.', takeaway:'Vòng tuần hoàn nước là hệ thống liên kết toàn cầu, duy trì sự sống trên Trái Đất.' },
+  { id:2, cat:'Cơ bản', title:'Các trạng thái của nước', en:'States of Water', def:'Nước tồn tại ở ba thể: lỏng, khí (hơi nước) và rắn (băng/tuyết).', explain:'Nước lỏng gặp lạnh dưới 0°C đông thành băng. Băng tan khi nhiệt độ trên 0°C. Nước bay hơi thành hơi nước ở mọi nhiệt độ, mạnh nhất khi nóng.', example:'Đá viên tan trong ly nước, hơi nước bốc lên từ ấm đun.', takeaway:'Nước có thể chuyển đổi giữa ba thể tùy theo nhiệt độ, tạo nên sự linh hoạt trong tự nhiên.' },
+  { id:3, cat:'Bay hơi', title:'Sự bay hơi', en:'Evaporation', def:'Quá trình nước lỏng chuyển thành hơi nước.', explain:'Bay hơi xảy ra khi các phân tử nước ở bề mặt hấp thụ đủ năng lượng để thoát ra khỏi thể lỏng. Nhiệt độ, gió và diện tích bề mặt ảnh hưởng đến tốc độ bay hơi.', example:'Quần áo ướt khô nhanh hơn khi phơi ngoài nắng và có gió.', takeaway:'Bay hơi là bước đầu tiên của vòng tuần hoàn, cần năng lượng từ Mặt Trời.' },
+  { id:4, cat:'Thoát hơi', title:'Sự thoát hơi nước', en:'Transpiration', def:'Quá trình thực vật giải phóng hơi nước qua lá.', explain:'Rễ hút nước từ đất, vận chuyển qua thân lên lá. Tại lá, nước thoát ra ngoài qua các lỗ khí (stomata). Quá trình này giúp cây vận chuyển chất khoáng và điều hòa nhiệt.', example:'Rừng nhiệt đới tạo ra độ ẩm cao nhờ thoát hơi nước từ hàng triệu cây.', takeaway:'Thực vật đóng góp một lượng lớn hơi nước vào khí quyển qua thoát hơi.' },
+  { id:5, cat:'Ngưng tụ', title:'Sự ngưng tụ', en:'Condensation', def:'Quá trình hơi nước chuyển thành nước lỏng hoặc băng.', explain:'Khi không khí chứa hơi nước bị lạnh đi, hơi nước ngưng tụ thành các giọt nước nhỏ li ti hoặc tinh thể băng, tạo nên mây, sương mù hoặc sương.', example:'Giọt nước trên ly nước đá là hơi nước trong không khí ngưng tụ.', takeaway:'Ngưng tụ tạo ra mây và sương, là bước đệm trước khi mưa.' },
+  { id:6, cat:'Giáng thủy', title:'Sự giáng thủy', en:'Precipitation', def:'Nước rơi từ mây xuống mặt đất dưới dạng mưa, tuyết, mưa đá.', explain:'Các giọt nước trong mây va chạm và lớn dần đến khi nặng đến mức trọng lực kéo xuống. Tùy nhiệt độ không khí, nước rơi dưới dạng mưa, tuyết hoặc mưa đá.', example:'Mưa rào mùa hạ, tuyết rơi mùa đông.', takeaway:'Giáng thủy đưa nước từ khí quyển trở lại mặt đất, khép kín vòng tuần hoàn.' },
+  { id:7, cat:'Dòng chảy', title:'Dòng chảy mặt', en:'Surface Runoff', def:'Nước chảy trên bề mặt đất.', explain:'Nước mưa hoặc băng tan chảy trên mặt đất, không thấm ngay vào đất. Dòng chảy mặt phụ thuộc vào độ dốc, đặc điểm đất và thảm thực vật.', example:'Nước mưa chảy thành dòng trên đường phố khi trời mưa lớn.', takeaway:'Dòng chảy mặt là con đường nhanh nhất đưa nước về sông hồ và đại dương.' },
+  { id:8, cat:'Thấm', title:'Sự thấm', en:'Infiltration', def:'Quá trình nước đi vào trong đất.', explain:'Nước trên mặt đất thấm qua các lỗ rỗng của đất. Tốc độ thấm phụ thuộc vào loại đất, độ ẩm và thảm thực vật. Đất cát thấm nhanh hơn đất sét.', example:'Nước mưa thấm vào đất vườn sau cơn mưa.', takeaway:'Thấm giúp bổ sung nước ngầm và giảm dòng chảy mặt.' },
+  { id:9, cat:'Nước ngầm', title:'Nước ngầm', en:'Groundwater', def:'Nước chứa trong các lỗ rỗng của đất đá dưới mặt đất.', explain:'Nước ngầm tích tụ trong các tầng chứa nước (aquifer). Nó di chuyển rất chậm và là nguồn nước ngọt quan trọng cho con người.', example:'Giếng khoan lấy nước từ tầng nước ngầm.', takeaway:'Nước ngầm là nguồn tài nguyên quý giá nhưng dễ bị ô nhiễm và cạn kiệt nếu khai thác quá mức.' },
+  { id:10, cat:'Bảo tồn', title:'Bảo tồn nước', en:'Water Conservation', def:'Sử dụng và quản lý nước một cách bền vững.', explain:'Bảo tồn nước bao gồm giảm ô nhiễm, sử dụng tiết kiệm, bảo vệ hệ sinh thái và xử lý nước thải. Mặc dù nước tuần hoàn, nước sạch có thể bị ô nhiễm hoặc không phân bố đều.', example:'Sửa vòi nước rò rỉ, tắt vòi khi đánh răng, bảo vệ rừng đầu nguồn.', takeaway:'Bảo vệ nguồn nước là bảo vệ sự sống. Mỗi hành động nhỏ đều có ý nghĩa.' }
+];
+
+/* ============ ACHIEVEMENTS ============ */
+const achievementsData = [
+  { id:'first_drop', name:'Giọt Nước Đầu Tiên', desc:'Hoàn thành chương đầu tiên', icon:'droplet' },
+  { id:'sun_explorer', name:'Nhà Thám Hiểm Mặt Trời', desc:'Hoàn thành chương Bay hơi', icon:'sun' },
+  { id:'cloud_whisperer', name:'Người Thì Thầm Với Mây', desc:'Hoàn thành chương Ngưng tụ', icon:'cloud' },
+  { id:'rain_guardian', name:'Người Bảo Vệ Mưa', desc:'Hoàn thành chương Giáng thủy', icon:'cloud-rain' },
+  { id:'forest_protector', name:'Người Bảo Vệ Rừng', desc:'Hoàn thành chương Thoát hơi nước', icon:'leaf' },
+  { id:'underground_explorer', name:'Nhà Thám Hiểm Lòng Đất', desc:'Hoàn thành chương Nước ngầm', icon:'layers' },
+  { id:'water_scholar', name:'Học Giả Nước', desc:'Hoàn thành tất cả 10 chương', icon:'book-open' },
+  { id:'quiz_beginner', name:'Người Mới Chơi Quiz', desc:'Hoàn thành 10 câu hỏi', icon:'help-circle' },
+  { id:'quiz_master', name:'Bậc Thầy Quiz', desc:'Hoàn thành tất cả 50 câu hỏi', icon:'trophy' },
+  { id:'aqua_best_friend', name:'Bạn Thân Của Aqua', desc:'Sử dụng trợ lý Aqua', icon:'message-circle' },
+  { id:'guardian_of_aquaria', name:'Người Bảo Vệ Aquaria', desc:'Hoàn thành nhiệm vụ môi trường', icon:'shield' }
+];
+
+/* ============ NAVIGATION ============ */
+let currentPage = 'home';
+let currentChapterId = null;
+let aquaContext = { topic: null, chapterId: null };
+
+function navigateTo(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById('page-' + page);
+  if (target) target.classList.add('active');
+  currentPage = page;
+  document.querySelectorAll('.nav-links button').forEach(b => {
+    b.classList.toggle('active', b.dataset.page === page);
+  });
+  document.getElementById('navLinks').classList.remove('open');
+
+  if (page === 'chapters') renderChaptersGrid('chaptersGrid');
+  if (page === 'home') { renderChaptersGrid('homeChaptersGrid'); updateProgressUI(); }
+  if (page === 'achievements') renderAchievements();
+  if (page === 'library') renderLibrary();
+  if (page === 'quiz') renderQuizStart();
+  if (page === 'lab') renderLab();
+  if (page === 'mission') renderMission();
+
+  // Toggle floating Aqua button visibility (not on home)
+  document.getElementById('floatingAquaBtn').classList.toggle('visible', page !== 'home' && page !== 'chapterDetail');
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  observeReveals();
+}
+
+function toggleMobileMenu() {
+  document.getElementById('navLinks').classList.toggle('open');
+}
+
+/* ============ INTRO ============ */
+function skipIntro() {
+  document.getElementById('introScreen').classList.add('fade-out');
+  document.getElementById('app').classList.remove('hidden');
+  progress.introSeen = true;
+  saveProgress();
+  initApp();
+}
+function startAdventure() { skipIntro(); setTimeout(() => navigateTo('chapters'), 300); }
+function continueJourney() {
+  const incomplete = chapters.find(ch => !progress.chaptersCompleted.includes(ch.id));
+  if (incomplete) openChapter(incomplete.id);
+  else openChapter(1);
+}
+
+/* Intro particles */
+(function createIntroParticles() {
+  const container = document.getElementById('introParticles');
+  if (!container) return;
+  for (let i = 0; i < 25; i++) {
+    const p = document.createElement('div');
+    p.className = 'intro-particle';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.animationDelay = Math.random() * 10 + 's';
+    p.style.animationDuration = (8 + Math.random() * 12) + 's';
+    const size = (3 + Math.random() * 5);
+    p.style.width = p.style.height = size + 'px';
+    container.appendChild(p);
+  }
+})();
+
+/* ============ APP INIT ============ */
+function initApp() {
+  if (window.lucide) lucide.createIcons();
+  renderChaptersGrid('homeChaptersGrid');
+  renderChaptersGrid('chaptersGrid');
+  updateProgressUI();
+  initHero3D();
+  setupScrollEffects();
+  setupCursorRipple();
+}
+
+/* ============ HERO 3D ============ */
+let heroScene, heroCamera, heroRenderer, heroSphere, heroParticles, heroRing;
+let heroAnimationId = null;
+
+function initHero3D() {
+  const canvas = document.getElementById('heroCanvas');
+  if (!canvas || !window.THREE) {
+    document.getElementById('heroFallback').classList.remove('hidden');
+    return;
+  }
+  try {
+    heroScene = new THREE.Scene();
+    heroCamera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+    heroCamera.position.z = 5;
+    heroRenderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    heroRenderer.setSize(canvas.clientWidth, canvas.clientHeight);
+    heroRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    // Water sphere
+    const geo = new THREE.SphereGeometry(1.6, 64, 64);
+    const mat = new THREE.MeshPhongMaterial({
+      color: 0x6ABFE8, transparent: true, opacity: 0.92,
+      shininess: 120, specular: 0xffffff, emissive: 0x1a3a5c, emissiveIntensity: 0.15
+    });
+    heroSphere = new THREE.Mesh(geo, mat);
+    heroScene.add(heroSphere);
+
+    // Inner glow sphere
+    const innerMat = new THREE.MeshBasicMaterial({ color: 0xB9F0E8, transparent: true, opacity: 0.25 });
+    heroSphere.add(new THREE.Mesh(new THREE.SphereGeometry(1.35, 32, 32), innerMat));
+
+    // Rotating ring
+    const ringGeo = new THREE.TorusGeometry(2.2, 0.02, 16, 100);
+    const ringMat = new THREE.MeshBasicMaterial({ color: 0xB9F0E8, transparent: true, opacity: 0.5 });
+    heroRing = new THREE.Mesh(ringGeo, ringMat);
+    heroRing.rotation.x = Math.PI / 2.5;
+    heroScene.add(heroRing);
+
+    // Second ring
+    const ring2 = new THREE.Mesh(new THREE.TorusGeometry(2.4, 0.015, 16, 100), ringMat.clone());
+    ring2.rotation.x = Math.PI / 1.8;
+    ring2.rotation.z = Math.PI / 4;
+    heroScene.add(ring2);
+    heroRing.userData.second = ring2;
+
+    // Particles
+    const particleCount = 100;
+    const positions = new Float32Array(particleCount * 3);
+    for (let i = 0; i < particleCount; i++) {
+      positions[i*3] = (Math.random() - 0.5) * 14;
+      positions[i*3+1] = (Math.random() - 0.5) * 10;
+      positions[i*3+2] = (Math.random() - 0.5) * 10;
+    }
+    const particleGeo = new THREE.BufferGeometry();
+    particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    const particleMat = new THREE.PointsMaterial({ color: 0xFFFFFF, size: 0.07, transparent: true, opacity: 0.8 });
+    heroParticles = new THREE.Points(particleGeo, particleMat);
+    heroScene.add(heroParticles);
+
+    // Lights
+    heroScene.add(new THREE.AmbientLight(0xFFFFFF, 0.65));
+    const dirLight = new THREE.DirectionalLight(0xFFFFFF, 1);
+    dirLight.position.set(5, 5, 5);
+    heroScene.add(dirLight);
+    const pointLight = new THREE.PointLight(0x6ABFE8, 1, 20);
+    pointLight.position.set(-3, 2, 4);
+    heroScene.add(pointLight);
+    const warmLight = new THREE.PointLight(0xFFE5A6, 0.6, 15);
+    warmLight.position.set(3, 3, 2);
+    heroScene.add(warmLight);
+
+    canvas.addEventListener('mousemove', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+      const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+      heroCamera.position.x = x * 0.6;
+      heroCamera.position.y = -y * 0.4;
+      heroCamera.lookAt(0, 0, 0);
+    });
+
+    animateHero();
+  } catch(e) {
+    console.warn('3D failed, fallback', e);
+    document.getElementById('heroFallback').classList.remove('hidden');
+  }
+}
+function animateHero() {
+  if (heroAnimationId) cancelAnimationFrame(heroAnimationId);
+  heroAnimationId = requestAnimationFrame(animateHero);
+  const t = Date.now() * 0.001;
+  if (heroSphere) {
+    heroSphere.rotation.y = t * 0.18;
+    heroSphere.position.y = Math.sin(t * 0.8) * 0.1;
+  }
+  if (heroRing) {
+    heroRing.rotation.z = t * 0.15;
+    if (heroRing.userData.second) heroRing.userData.second.rotation.z = -t * 0.12;
+  }
+  if (heroParticles) {
+    heroParticles.rotation.y = t * 0.03;
+    heroParticles.rotation.x = Math.sin(t * 0.2) * 0.1;
+  }
+  if (heroRenderer && heroScene && heroCamera) heroRenderer.render(heroScene, heroCamera);
+}
+
+/* ============ SCROLL & CURSOR EFFECTS ============ */
+function setupScrollEffects() {
+  const nav = document.getElementById('mainNav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 20);
+  }, { passive: true });
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+}
+function observeReveals() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal:not(.visible)').forEach(el => observer.observe(el));
+}
+
+function setupCursorRipple() {
+  document.addEventListener('click', (e) => {
+    if (progress.motionReduced) return;
+    const ripple = document.createElement('div');
+    ripple.className = 'cursor-ripple';
+    ripple.style.left = e.clientX + 'px';
+    ripple.style.top = e.clientY + 'px';
+    document.body.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 600);
+  });
+}
+
+/* ============ CONFETTI ============ */
+function triggerConfetti() {
+  const canvas = document.getElementById('confettiCanvas');
+  if (!canvas) return;
+  canvas.style.display = 'block';
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const ctx = canvas.getContext('2d');
+  const particles = [];
+  const colors = ['#6ABFE8', '#B9F0E8', '#FFE5A6', '#DCD7F8', '#BFE8D1', '#FFD1DC'];
+  for (let i = 0; i < 120; i++) {
+    particles.push({
+      x: canvas.width / 2 + (Math.random() - 0.5) * 200,
+      y: canvas.height / 3,
+      vx: (Math.random() - 0.5) * 14,
+      vy: Math.random() * -12 - 4,
+      size: 5 + Math.random() * 8,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      rotation: Math.random() * Math.PI,
+      vr: (Math.random() - 0.5) * 0.3,
+      life: 1
+    });
+  }
+  let frame = 0;
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.4;
+      p.rotation += p.vr;
+      p.life -= 0.008;
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, p.life);
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rotation);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size);
+      ctx.restore();
+    });
+    frame++;
+    if (frame < 180) requestAnimationFrame(animate);
+    else { ctx.clearRect(0, 0, canvas.width, canvas.height); canvas.style.display = 'none'; }
+  }
+  animate();
+}
+
+/* ============ RENDER CHAPTER CARDS ============ */
+function renderChaptersGrid(containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = '';
+  chapters.forEach((ch, idx) => {
+    const completed = progress.chaptersCompleted.includes(ch.id);
+    const diffLabel = ['', 'Cơ bản', 'Dễ', 'Trung bình', 'Nâng cao', 'Chuyên gia'][ch.difficulty];
+    const card = document.createElement('div');
+    card.className = 'chapter-card reveal' + (completed ? ' completed' : '');
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-label', `Chương ${ch.id}: ${ch.title}`);
+    card.onclick = () => openChapter(ch.id);
+    card.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') openChapter(ch.id); };
+    card.style.transitionDelay = (idx * 0.05) + 's';
+    card.innerHTML = `
+      <div class="chapter-thumb" style="background:linear-gradient(135deg, ${ch.color}, ${ch.color}88);">
+        ${getChapterArt(ch.id, ch.color)}
+        <span class="chapter-num">${ch.id}</span>
+        <span class="chapter-status ${completed ? 'done' : ''}">${completed ? '✓ Đã xong' : 'Chưa học'}</span>
+      </div>
+      <div class="chapter-body">
+        <h3>${ch.title}</h3>
+        <p>${ch.desc}</p>
+        <div class="chapter-meta">
+          <span class="difficulty-badge diff-${ch.difficulty}">${diffLabel}</span>
+          <span class="cta">${completed ? 'Học lại →' : 'Bắt đầu →'}</span>
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+  if (window.lucide) lucide.createIcons();
+  observeReveals();
+}
+
+/* ============ CHAPTER DETAIL ============ */
+function openChapter(id) {
+  currentChapterId = id;
+  const ch = chapters.find(c => c.id === id);
+  if (!ch) return;
+  const container = document.getElementById('chapterDetailContent');
+  const completed = progress.chaptersCompleted.includes(id);
+
+  container.innerHTML = `
+    <div class="chapter-nav-top">
+      <button class="back-btn" onclick="navigateTo('chapters')">
+        <i data-lucide="arrow-left" style="width:16px;height:16px;"></i> Quay lại
+      </button>
+      <span style="font-size:0.85rem;color:var(--text-light);font-weight:600;">Chương ${ch.id} / 10</span>
+    </div>
+
+    <div class="chapter-hero" style="background:linear-gradient(135deg, ${ch.color} 0%, ${ch.color}CC 60%, ${ch.color}88 100%);">
+      <h1>${ch.title}</h1>
+      <p class="chapter-topic">${ch.topic}</p>
+      <div class="chapter-art">${getChapterArt(ch.id, ch.color)}</div>
+    </div>
+
+    <div class="chapter-content-grid">
+      <div class="chapter-main">
+        <div class="content-card reveal">
+          <h2><i data-lucide="book-open" style="width:20px;height:20px;"></i> Câu chuyện</h2>
+          <p style="font-style:italic;color:var(--deep-ocean);font-size:1.02rem;line-height:1.75;">"${ch.story}"</p>
+        </div>
+
+        ${ch.content.map(c => `
+          <div class="content-card reveal">
+            <h2><i data-lucide="info" style="width:20px;height:20px;"></i> ${c.heading}</h2>
+            <p>${c.text}</p>
+          </div>
+        `).join('')}
+
+        <div class="interactive-box reveal">
+          <h3><i data-lucide="flask-conical" style="width:22px;height:22px;"></i> Thí nghiệm tương tác</h3>
+          ${renderChapterInteractive(ch)}
+        </div>
+
+        <div class="content-card reveal" style="background:linear-gradient(135deg,#FFF9E6,#FFF3D6);">
+          <h2><i data-lucide="star" style="width:20px;height:20px;color:#B8860B;"></i> Tóm tắt kiến thức</h2>
+          <p style="font-weight:600;font-size:1rem;">${ch.summary}</p>
+        </div>
+
+        <div class="content-card reveal">
+          <h2><i data-lucide="help-circle" style="width:20px;height:20px;"></i> Câu hỏi ôn tập</h2>
+          ${ch.assessment.map((a, i) => `
+            <div style="margin-bottom:20px;">
+              <p style="font-weight:700;font-size:0.95rem;">${a.q}</p>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;">
+                ${a.options.map((o, j) => `
+                  <button class="btn btn-sm btn-secondary" onclick="checkChapterAnswer(${i}, ${j}, ${a.correct}, this)" style="font-size:0.82rem;">${o}</button>
+                `).join('')}
+              </div>
+              <p id="chapterFeedback${i}" style="margin-top:10px;font-size:0.87rem;display:none;"></p>
+            </div>
+          `).join('')}
+        </div>
+
+        <div class="chapter-nav-buttons">
+          ${id > 1 ? `<button class="btn btn-secondary" onclick="openChapter(${id-1})"><i data-lucide="arrow-left" style="width:16px;height:16px;"></i> Chương trước</button>` : ''}
+          <button class="btn btn-primary" onclick="completeChapter(${id})" style="background:linear-gradient(135deg,var(--mint-green),#4A9B5E);color:white;">
+            <i data-lucide="check-circle" style="width:18px;height:18px;"></i>
+            ${completed ? 'Đã hoàn thành' : 'Hoàn thành chương'}
+          </button>
+          ${id < 10 ? `<button class="btn btn-primary" onclick="openChapter(${id+1})">Chương tiếp <i data-lucide="arrow-right" style="width:16px;height:16px;"></i></button>` : `<button class="btn btn-primary" onclick="navigateTo('mission')">Nhiệm vụ cuối <i data-lucide="arrow-right" style="width:16px;height:16px;"></i></button>`}
+        </div>
+      </div>
+
+      <div class="chapter-sidebar">
+        <div class="sidebar-card">
+          <h4><i data-lucide="message-circle" style="width:18px;height:18px;color:var(--ocean-blue);"></i> Trợ lý Aqua</h4>
+          <p>Aqua có thể giải thích chi tiết hơn về chương này.</p>
+          <button class="ask-aqua-btn" onclick="openAquaWithContext(${id})">
+            <i data-lucide="sparkles" style="width:18px;height:18px;"></i>
+            Giải thích cùng Aqua
+          </button>
+        </div>
+        <div class="sidebar-card">
+          <h4><i data-lucide="bar-chart-3" style="width:18px;height:18px;color:var(--ocean-blue);"></i> Tiến độ</h4>
+          <p>Độ khó: <span class="difficulty-badge diff-${ch.difficulty}">${['','Cơ bản','Dễ','Trung bình','Nâng cao','Chuyên gia'][ch.difficulty]}</span></p>
+          <p>Trạng thái: <strong style="color:${completed?'#2D8B5E':'var(--text-medium)'};">${completed ? '✅ Đã hoàn thành' : '⏳ Chưa hoàn thành'}</strong></p>
+        </div>
+      </div>
+    </div>
+  `;
+
+  navigateTo('chapterDetail');
+  if (window.lucide) lucide.createIcons();
+  attachInteractiveHandlers(ch);
+  observeReveals();
+}
+
+function renderChapterInteractive(ch) {
+  switch(ch.interactive) {
+    case 'locations':
+      return `
+        <p style="font-size:0.92rem;margin-bottom:14px;font-weight:600;">Nhấp vào từng địa điểm để khám phá:</p>
+        <div class="clickable-locations" id="locationsContainer">
+          ${ch.locations.map((loc, i) => `<div class="location-chip" onclick="showLocationInfo(${i}, this)" tabindex="0">${loc.name}</div>`).join('')}
+        </div>
+        <div class="location-info" id="locationInfo">Chọn một địa điểm để xem thông tin.</div>
+      `;
+    case 'sunSlider':
+      return `
+        <div class="sim-control">
+          <label><span>☀️ Cường độ ánh nắng</span><span id="sunVal" style="color:var(--deep-ocean);">50%</span></label>
+          <input type="range" min="0" max="100" value="50" oninput="updateSunSim(this.value)" aria-label="Cường độ ánh nắng">
+        </div>
+        <div class="sim-canvas" id="sunSimCanvas" style="position:relative;background:linear-gradient(180deg,#FFE5A6 0%,#F8FCFF 100%);">
+          <div style="position:absolute;top:10%;left:50%;transform:translateX(-50%);font-size:3rem;opacity:0.8;" id="sunIcon">☀️</div>
+          <div style="position:absolute;bottom:0;left:0;right:0;height:60%;">
+            <div id="sunWaterLevel" style="position:absolute;bottom:0;left:0;right:0;height:70%;background:linear-gradient(180deg,#A8DDF4,#6ABFE8);border-radius:8px 8px 0 0;transition:height 0.4s;">
+              <div id="sunVapor" style="position:absolute;inset:0;opacity:0.4;background:radial-gradient(circle at 50% 10%,white,transparent 70%);transition:opacity 0.4s;"></div>
+            </div>
+          </div>
+        </div>
+        <p style="font-size:0.82rem;color:var(--text-light);margin-top:10px;font-style:italic;">Mô phỏng khái niệm: nhiệt độ cao thúc đẩy bay hơi mạnh hơn. Không phải dự báo thời tiết chính xác.</p>
+      `;
+    case 'plantDiagram':
+      return `
+        <div style="display:flex;flex-direction:column;align-items:center;gap:14px;">
+          <svg viewBox="0 0 200 280" style="width:180px;height:240px;">
+            <defs>
+              <linearGradient id="stemGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#6BBF7E"/>
+                <stop offset="100%" stop-color="#8B6914"/>
+              </linearGradient>
+            </defs>
+            <rect x="96" y="100" width="8" height="130" fill="url(#stemGrad)" rx="3"/>
+            <ellipse cx="100" cy="75" rx="65" ry="45" fill="#4A9B5E" opacity="0.85"/>
+            <ellipse cx="60" cy="85" rx="38" ry="24" fill="#6BBF7E"/>
+            <ellipse cx="140" cy="85" rx="38" ry="24" fill="#6BBF7E"/>
+            <path d="M100 220 Q75 245 50 235" stroke="#8B6914" stroke-width="3" fill="none"/>
+            <path d="M100 220 Q125 245 150 235" stroke="#8B6914" stroke-width="3" fill="none"/>
+            <path d="M100 220 Q95 245 85 250" stroke="#8B6914" stroke-width="2.5" fill="none"/>
+            <path d="M100 220 Q105 245 115 250" stroke="#8B6914" stroke-width="2.5" fill="none"/>
+            <circle cx="100" cy="215" r="14" fill="#6ABFE8" opacity="0.5"/>
+            <circle cx="100" cy="160" r="4" fill="#6ABFE8"/>
+            <circle cx="100" cy="130" r="4" fill="#6ABFE8"/>
+            <circle cx="100" cy="100" r="4" fill="#6ABFE8"/>
+            <text x="100" y="272" text-anchor="middle" font-size="11" font-weight="700" fill="#285477">Rễ</text>
+            <text x="100" y="55" text-anchor="middle" font-size="11" font-weight="700" fill="#285477">Lá</text>
+            <text x="160" y="180" text-anchor="middle" font-size="11" font-weight="700" fill="#285477">Thân</text>
+          </svg>
+          <p style="font-size:0.88rem;color:var(--text-medium);text-align:center;line-height:1.6;">Nước được rễ hút từ đất, vận chuyển qua thân lên lá và thoát ra qua khí khổng.</p>
+        </div>
+      `;
+    case 'coolingSlider':
+      return `
+        <div class="sim-control">
+          <label><span>🌡️ Nhiệt độ không khí</span><span id="coolVal" style="color:var(--deep-ocean);">30°C</span></label>
+          <input type="range" min="0" max="40" value="30" oninput="updateCoolingSim(this.value)" aria-label="Nhiệt độ không khí">
+        </div>
+        <div class="sim-canvas" id="coolingCanvas" style="position:relative;background:linear-gradient(180deg,#A8DDF4,#F8FCFF);">
+          <div id="coolingParticles" style="position:absolute;inset:0;overflow:hidden;"></div>
+        </div>
+        <p style="font-size:0.82rem;color:var(--text-light);margin-top:10px;font-style:italic;">Khi không khí lạnh đi, hơi nước ngưng tụ thành các giọt nước nhỏ.</p>
+      `;
+    case 'precipSelector':
+      return `
+        <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+          <button class="location-chip" onclick="showPrecip('rain', this)" style="flex:1;">🌧️ Mưa</button>
+          <button class="location-chip" onclick="showPrecip('snow', this)" style="flex:1;">❄️ Tuyết</button>
+          <button class="location-chip" onclick="showPrecip('hail', this)" style="flex:1;">🧊 Mưa đá</button>
+        </div>
+        <div class="location-info" id="precipInfo">Chọn một dạng giáng thủy để xem giải thích.</div>
+      `;
+    case 'terrainSlider':
+      return `
+        <div class="sim-control">
+          <label><span>⛰️ Độ dốc địa hình</span><span id="slopeVal" style="color:var(--deep-ocean);">30°</span></label>
+          <input type="range" min="0" max="60" value="30" oninput="updateSlopeSim(this.value)" aria-label="Độ dốc địa hình">
+        </div>
+        <div class="sim-canvas" id="slopeCanvas" style="position:relative;overflow:hidden;background:linear-gradient(180deg,#F8FCFF,#A8DDF4);">
+          <div id="slopeHill" style="position:absolute;bottom:0;left:0;right:0;height:70%;background:linear-gradient(180deg,#BFE8D1,#6BBF7E);border-radius:100% 100% 0 0;transition:all 0.4s;"></div>
+          <div id="slopeWater" style="position:absolute;bottom:0;left:0;right:0;height:30%;background:linear-gradient(180deg,#6ABFE8,#4A9BC8);transition:height 0.4s;border-radius:50% 50% 0 0;"></div>
+        </div>
+        <p style="font-size:0.82rem;color:var(--text-light);margin-top:10px;font-style:italic;">Địa hình càng dốc, nước chảy càng nhanh và tập trung hơn.</p>
+      `;
+    case 'soilCross':
+      return `
+        <div class="clickable-locations" style="grid-template-columns:repeat(2,1fr);">
+          <div class="location-chip" onclick="showSoilInfo('surface', this)">Mặt đất</div>
+          <div class="location-chip" onclick="showSoilInfo('permeable', this)">Đất thấm</div>
+          <div class="location-chip" onclick="showSoilInfo('rock', this)">Tầng đá</div>
+          <div class="location-chip" onclick="showSoilInfo('aquifer', this)">Tầng chứa nước</div>
+        </div>
+        <div class="location-info" id="soilInfo">Nhấp vào từng lớp để khám phá.</div>
+        <div style="margin-top:18px;">
+          <svg viewBox="0 0 300 170" style="width:100%;max-width:420px;display:block;margin:0 auto;">
+            <rect x="0" y="0" width="300" height="35" fill="#BFE8D1"/>
+            <rect x="0" y="35" width="300" height="55" fill="#D4C4A8"/>
+            <rect x="0" y="90" width="300" height="35" fill="#A89070"/>
+            <rect x="0" y="125" width="300" height="45" fill="#6ABFE8" opacity="0.6"/>
+            <circle cx="80" cy="65" r="2" fill="#6ABFE8"/>
+            <circle cx="150" cy="70" r="2.5" fill="#6ABFE8"/>
+            <circle cx="220" cy="60" r="2" fill="#6ABFE8"/>
+            <circle cx="100" cy="150" r="3" fill="#285477" opacity="0.5"/>
+            <circle cx="180" cy="145" r="3" fill="#285477" opacity="0.5"/>
+            <circle cx="240" cy="155" r="2.5" fill="#285477" opacity="0.5"/>
+            <text x="150" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#285477">Mặt đất</text>
+            <text x="150" y="68" text-anchor="middle" font-size="11" font-weight="700" fill="#285477">Đất thấm</text>
+            <text x="150" y="113" text-anchor="middle" font-size="11" font-weight="700" fill="#285477">Tầng đá</text>
+            <text x="150" y="152" text-anchor="middle" font-size="11" font-weight="700" fill="#285477">Tầng chứa nước</text>
+          </svg>
+        </div>
+      `;
+    case 'reservoirExplore':
+      return `
+        <div class="clickable-locations" style="grid-template-columns:repeat(2,1fr);">
+          ${['Đại dương','Sông băng','Nước ngầm','Hồ'].map((name, i) => `
+            <div class="location-chip" onclick="showReservoirInfo(${i}, this)">${name}</div>
+          `).join('')}
+        </div>
+        <div class="location-info" id="reservoirInfo">Chọn một hồ chứa để tìm hiểu.</div>
+      `;
+    case 'fullCycle':
+      return `
+        <div style="text-align:center;padding:20px;">
+          <svg viewBox="0 0 300 240" style="width:100%;max-width:380px;">
+            <circle cx="150" cy="120" r="90" fill="none" stroke="#A8DDF4" stroke-width="3" stroke-dasharray="12,6"/>
+            <circle cx="150" cy="30" r="20" fill="#FFE5A6"/>
+            <text x="150" y="35" text-anchor="middle" font-size="10" font-weight="700" fill="#8B6914">BAY HƠI</text>
+            <circle cx="240" cy="120" r="20" fill="#DCD7F8"/>
+            <text x="240" y="125" text-anchor="middle" font-size="10" font-weight="700" fill="#6B4BA8">NGƯNG TỤ</text>
+            <circle cx="150" cy="210" r="20" fill="#A8DDF4"/>
+            <text x="150" y="215" text-anchor="middle" font-size="10" font-weight="700" fill="#285477">GIÁNG THỦY</text>
+            <circle cx="60" cy="120" r="20" fill="#6ABFE8"/>
+            <text x="60" y="125" text-anchor="middle" font-size="10" font-weight="700" fill="#285477">DÒNG CHẢY</text>
+            <circle cx="150" cy="120" r="30" fill="#B9F0E8" opacity="0.5"/>
+            <text x="150" y="118" text-anchor="middle" font-size="9" font-weight="800" fill="#285477">THẤM</text>
+            <text x="150" y="132" text-anchor="middle" font-size="9" font-weight="800" fill="#285477">NƯỚC NGẦM</text>
+            <path d="M150 50 L150 90" stroke="#285477" stroke-width="2" marker-end="url(#arrow)"/>
+            <path d="M220 120 L190 120" stroke="#285477" stroke-width="2"/>
+            <path d="M150 190 L150 150" stroke="#285477" stroke-width="2"/>
+            <path d="M80 120 L110 120" stroke="#285477" stroke-width="2"/>
+          </svg>
+          <p style="font-size:0.88rem;color:var(--text-medium);margin-top:12px;line-height:1.6;max-width:400px;margin-left:auto;margin-right:auto;">Vòng tuần hoàn nước là một mạng lưới liên kết — nước có thể đi theo nhiều con đường khác nhau.</p>
+        </div>
+      `;
+    case 'missionGame':
+      return `
+        <div id="missionGameContainer">
+          <p style="font-weight:700;margin-bottom:14px;font-size:0.95rem;">Chọn hành động đúng:</p>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <button class="mission-action" onclick="missionChoice(true, this)">🌊 Giữ sông hồ sạch, không xả rác</button>
+            <button class="mission-action" onclick="missionChoice(false, this)">🚰 Lãng phí nước sinh hoạt</button>
+            <button class="mission-action" onclick="missionChoice(true, this)">🌳 Bảo vệ rừng đầu nguồn</button>
+            <button class="mission-action" onclick="missionChoice(false, this)">🏭 Xả nước thải chưa xử lý ra sông</button>
+          </div>
+          <p id="missionFeedback" style="margin-top:14px;font-size:0.92rem;font-weight:600;"></p>
+        </div>
+      `;
+    default:
+      return '<p>Nội dung tương tác.</p>';
+  }
+}
+
+function attachInteractiveHandlers(ch) {
+  if (window.lucide) lucide.createIcons();
+  if (ch.interactive === 'coolingSlider') updateCoolingSim(30);
+}
+
+function showLocationInfo(index, el) {
+  const ch = chapters.find(c => c.id === currentChapterId);
+  if (!ch || !ch.locations) return;
+  document.querySelectorAll('#locationsContainer .location-chip').forEach(e => e.classList.remove('active'));
+  el.classList.add('active');
+  const loc = ch.locations[index];
+  document.getElementById('locationInfo').innerHTML = `<strong>${loc.name}:</strong> ${loc.info}`;
+}
+
+function updateSunSim(val) {
+  const v = parseInt(val);
+  document.getElementById('sunVal').textContent = v + '%';
+  const water = document.getElementById('sunWaterLevel');
+  const vapor = document.getElementById('sunVapor');
+  const sunIcon = document.getElementById('sunIcon');
+  if (water) water.style.height = (70 - v * 0.5) + '%';
+  if (vapor) vapor.style.opacity = 0.1 + v * 0.008;
+  if (sunIcon) sunIcon.style.opacity = 0.3 + v * 0.007;
+}
+
+function updateCoolingSim(val) {
+  const v = parseInt(val);
+  const el = document.getElementById('coolVal');
+  if (el) el.textContent = v + '°C';
+  const container = document.getElementById('coolingParticles');
+  if (!container) return;
+  container.innerHTML = '';
+  const numDrops = Math.max(0, Math.floor((40 - v) * 2.5));
+  for (let i = 0; i < numDrops; i++) {
+    const drop = document.createElement('div');
+    const size = 3 + Math.random() * 5;
+    drop.style.cssText = `
+      position:absolute;width:${size}px;height:${size}px;border-radius:50%;
+      background:linear-gradient(135deg,#A8DDF4,#6ABFE8);
+      left:${Math.random()*100}%;top:${Math.random()*100}%;opacity:0.75;
+      box-shadow:0 0 6px rgba(106,191,232,0.4);
+      animation:floatDeco ${2+Math.random()*3}s ease-in-out infinite;
+    `;
+    container.appendChild(drop);
+  }
+}
+
+function showPrecip(type, el) {
+  document.querySelectorAll('.location-chip').forEach(e => e.classList.remove('active'));
+  if (el) el.classList.add('active');
+  const info = {
+    rain: '<strong>Mưa:</strong> Các giọt nước lỏng trong mây lớn dần và rơi xuống khi trọng lực thắng sức cản không khí. Nhiệt độ không khí trên 0°C dọc đường rơi.',
+    snow: '<strong>Tuyết:</strong> Hơi ẩm kết tinh thành tinh thể băng trong mây lạnh. Tuyết rơi khi nhiệt độ không khí dưới 0°C từ mây xuống mặt đất.',
+    hail: '<strong>Mưa đá:</strong> Các giọt nước bị đẩy lên xuống trong mây dông, đóng băng thành hạt băng và lớn dần. Khi quá nặng, chúng rơi xuống.'
+  };
+  const el2 = document.getElementById('precipInfo');
+  if (el2) el2.innerHTML = info[type] || '';
+}
+
+function updateSlopeSim(val) {
+  const v = parseInt(val);
+  document.getElementById('slopeVal').textContent = v + '°';
+  const water = document.getElementById('slopeWater');
+  const hill = document.getElementById('slopeHill');
+  if (water) water.style.height = (20 + v * 0.8) + '%';
+  if (hill) hill.style.borderRadius = `${100 - v}% 100% 0 0`;
+}
+
+function showSoilInfo(type, el) {
+  document.querySelectorAll('.location-chip').forEach(e => e.classList.remove('active'));
+  if (el) el.classList.add('active');
+  const info = {
+    surface: '<strong>Mặt đất:</strong> Nước mưa chạm mặt đất, một phần chảy trên bề mặt, một phần bắt đầu thấm xuống.',
+    permeable: '<strong>Đất thấm:</strong> Nước di chuyển qua các lỗ rỗng của đất. Đất cát thấm nhanh, đất sét thấm chậm.',
+    rock: '<strong>Tầng đá:</strong> Nước có thể di chuyển qua các khe nứt của đá hoặc bị chặn lại bởi đá không thấm.',
+    aquifer: '<strong>Tầng chứa nước:</strong> Lớp đất đá thấm nước chứa nước ngầm, có thể cung cấp nước cho giếng và suối.'
+  };
+  const el2 = document.getElementById('soilInfo');
+  if (el2) el2.innerHTML = info[type] || '';
+}
+
+function showReservoirInfo(index, el) {
+  document.querySelectorAll('.location-chip').forEach(e => e.classList.remove('active'));
+  if (el) el.classList.add('active');
+  const info = [
+    '<strong>Đại dương:</strong> Chứa khoảng 97% tổng lượng nước trên Trái Đất. Là hồ chứa lớn nhất, cung cấp phần lớn hơi nước cho khí quyển.',
+    '<strong>Sông băng:</strong> Chứa phần lớn nước ngọt của Trái Đất. Nước lưu lại đây hàng trăm đến hàng nghìn năm.',
+    '<strong>Nước ngầm:</strong> Nguồn nước ngọt lớn nhất có thể khai thác. Thời gian lưu có thể từ vài ngày đến hàng nghìn năm.',
+    '<strong>Hồ:</strong> Chỉ chiếm phần nhỏ tổng lượng nước nhưng rất quan trọng cho hệ sinh thái và con người. Thời gian lưu trung bình vài năm đến vài chục năm.'
+  ];
+  const el2 = document.getElementById('reservoirInfo');
+  if (el2) el2.innerHTML = info[index] || '';
+}
+
+let missionGameCompleted = false;
+function missionChoice(correct, el) {
+  if (missionGameCompleted) return;
+  if (correct) {
+    el.classList.add('correct-choice');
+    document.getElementById('missionFeedback').innerHTML = '<span style="color:#2D8B5E;">✅ Chính xác! Đây là hành động bảo vệ nguồn nước.</span>';
+  } else {
+    el.classList.add('wrong-choice');
+    document.getElementById('missionFeedback').innerHTML = '<span style="color:#C0562A;">❌ Hành động này gây hại. Hãy chọn lại!</span>';
+    setTimeout(() => el.classList.remove('wrong-choice'), 1200);
+    return;
+  }
+  if (!progress.missionCompleted) {
+    progress.missionCompleted = true;
+    unlockAchievement('guardian_of_aquaria');
+    saveProgress();
+  }
+  missionGameCompleted = true;
+}
+
+function checkChapterAnswer(qIndex, optIndex, correct, btn) {
+  const feedback = document.getElementById('chapterFeedback' + qIndex);
+  if (!feedback) return;
+  feedback.style.display = 'block';
+  if (optIndex === correct) {
+    feedback.innerHTML = '<span style="color:#2D8B5E;font-weight:700;">✅ Chính xác!</span>';
+    btn.style.background = '#E8F8F0';
+    btn.style.borderColor = '#2D8B5E';
+    btn.style.color = '#2D8B5E';
+  } else {
+    feedback.innerHTML = '<span style="color:#C0562A;font-weight:700;">❌ Chưa đúng. Hãy thử lại hoặc hỏi Aqua!</span>';
+    btn.style.background = '#FFF0F0';
+    btn.style.borderColor = '#C0562A';
+    btn.style.color = '#C0562A';
+    setTimeout(() => { btn.style.background = ''; btn.style.borderColor = ''; btn.style.color = ''; }, 2000);
+  }
+}
+
+function completeChapter(id) {
+  const wasNew = !progress.chaptersCompleted.includes(id);
+  if (wasNew) {
+    progress.chaptersCompleted.push(id);
+    if (id === 1) unlockAchievement('first_drop');
+    if (id === 2) unlockAchievement('sun_explorer');
+    if (id === 3) unlockAchievement('forest_protector');
+    if (id === 4) unlockAchievement('cloud_whisperer');
+    if (id === 5) unlockAchievement('rain_guardian');
+    if (id === 7) unlockAchievement('underground_explorer');
+    if (progress.chaptersCompleted.length === 10) unlockAchievement('water_scholar');
+    saveProgress();
+    showToast('🎉 Chúc mừng!', `Bạn đã hoàn thành Chương ${id}`);
+  }
+  renderChaptersGrid('chaptersGrid');
+  renderChaptersGrid('homeChaptersGrid');
+  if (wasNew && id < 10) setTimeout(() => openChapter(id + 1), 800);
+  else if (wasNew) setTimeout(() => navigateTo('mission'), 800);
+}
+
+/* ============ PROGRESS UI ============ */
+function updateProgressUI() {
+  const total = 10;
+  const done = progress.chaptersCompleted.length;
+  const pct = Math.round((done / total) * 100);
+  const ring = document.getElementById('progressRingFill');
+  const txt = document.getElementById('progressText');
+  if (ring) {
+    const circumference = 125.6;
+    ring.style.strokeDashoffset = circumference - (circumference * pct / 100);
+  }
+  if (txt) txt.textContent = pct + '%';
+
+  animateCounter('statChapters', done + '/10', false);
+  animateCounter('statQuestions', progress.quiz.answered, true);
+  animateCounter('statScore', progress.quiz.score, true);
+  animateCounter('statAchievements', progress.achievements.length, true);
+}
+
+function animateCounter(id, target, isNumeric) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (!isNumeric) { el.textContent = target; return; }
+  const startVal = parseInt(el.textContent) || 0;
+  const endVal = parseInt(target) || 0;
+  if (startVal === endVal) { el.textContent = target; return; }
+  const duration = 700;
+  const startTime = Date.now();
+  function tick() {
+    const t = Math.min((Date.now() - startTime) / duration, 1);
+    const eased = 1 - Math.pow(1 - t, 3);
+    const current = Math.round(startVal + (endVal - startVal) * eased);
+    el.textContent = current;
+    if (t < 1) requestAnimationFrame(tick);
+  }
+  tick();
+}
+
+/* ============ ACHIEVEMENTS ============ */
+function unlockAchievement(id) {
+  if (progress.achievements.includes(id)) return;
+  progress.achievements.push(id);
+  saveProgress();
+  const ach = achievementsData.find(a => a.id === id);
+  if (ach) {
+    showToast('🏆 Thành tựu mở khóa!', ach.name);
+    triggerConfetti();
+  }
+}
+
+function renderAchievements() {
+  const grid = document.getElementById('achievementsGrid');
+  if (!grid) return;
+  grid.innerHTML = achievementsData.map((a, idx) => {
+    const unlocked = progress.achievements.includes(a.id);
+    return `
+      <div class="achievement-card reveal ${unlocked ? 'unlocked' : ''}" style="transition-delay:${idx*0.03}s;">
+        <div class="achievement-icon">
+          <i data-lucide="${a.icon}"></i>
+        </div>
+        <div class="achievement-info">
+          <h4>${a.name}</h4>
+          <p>${a.desc}</p>
+        </div>
+      </div>
+    `;
+  }).join('');
+  if (window.lucide) lucide.createIcons();
+  observeReveals();
+}
+
+/* ============ TOAST ============ */
+function showToast(title, message) {
+  const container = document.getElementById('toastContainer');
+  if (!container) return;
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerHTML = `
+    <div class="toast-icon"><i data-lucide="award"></i></div>
+    <div><h4>${title}</h4><p>${message}</p></div>
+  `;
+  container.appendChild(toast);
+  if (window.lucide) lucide.createIcons();
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(80px)';
+    toast.style.transition = 'all 0.4s';
+    setTimeout(() => toast.remove(), 400);
+  }, 4000);
+}
+
+/* ============ QUIZ ENGINE — FIXED ============ */
+let quizState = {
+  currentIndex: 0,
+  answers: [],
+  score: 0,
+  correct: 0,
+  wrong: 0,
+  skipped: 0,
+  startTime: null,
+  used5050: false,
+  usedAqua: false,
+  answered: false
+};
+
+function renderQuizStart() {
+  const container = document.getElementById('quizContainer');
+  if (!container) return;
+  const best = progress.quiz.score || 0;
+  container.innerHTML = `
+    <div class="quiz-result">
+      <h1>THỬ THÁCH KIẾN THỨC</h1>
+      <p style="color:var(--text-light);margin-bottom:28px;font-size:1.02rem;">50 câu hỏi — 5 cấp độ — Chinh phục vòng tuần hoàn nước</p>
+      <div class="result-stats" style="max-width:560px;margin:0 auto 32px;">
+        <div class="result-stat"><div class="val">50</div><div class="lbl">Câu hỏi</div></div>
+        <div class="result-stat"><div class="val">5</div><div class="lbl">Cấp độ</div></div>
+        <div class="result-stat"><div class="val">${best}</div><div class="lbl">Điểm cao nhất</div></div>
+      </div>
+      <button class="btn btn-primary" onclick="startQuiz()" style="font-size:1.05rem;padding:16px 44px;">
+        <i data-lucide="play" style="width:20px;height:20px;"></i> BẮT ĐẦU THỬ THÁCH
+      </button>
+    </div>
+  `;
+  if (window.lucide) lucide.createIcons();
+}
+
+function startQuiz() {
+  quizState = {
+    currentIndex: 0, answers: [], score: 0, correct: 0, wrong: 0, skipped: 0,
+    startTime: Date.now(), used5050: false, usedAqua: false, answered: false
+  };
+  renderQuizQuestion();
+}
+
+function renderQuizQuestion() {
+  const container = document.getElementById('quizContainer');
+  if (!container) return;
+  const q = quizQuestions[quizState.currentIndex];
+  if (!q) { renderQuizResult(); return; }
+  quizState.answered = false;
+  const levelNames = ['', 'Cơ bản', 'Dễ', 'Trung bình', 'Nâng cao', 'Chuyên gia'];
+  const progressPct = (quizState.currentIndex / quizQuestions.length) * 100;
+
+  container.innerHTML = `
+    <div class="quiz-header">
+      <span class="quiz-level-badge">Cấp ${q.level} — ${levelNames[q.level]}</span>
+      <span class="quiz-score-display">Điểm: ${quizState.score}</span>
+    </div>
+    <div class="quiz-progress-bar">
+      <div class="quiz-progress-fill" style="width:${progressPct}%;"></div>
+    </div>
+    <div style="text-align:center;font-size:0.85rem;color:var(--text-light);margin-bottom:14px;font-weight:600;">
+      Câu ${quizState.currentIndex + 1} / ${quizQuestions.length}
+    </div>
+    <div class="quiz-question-card">
+      <div class="quiz-question-text">${q.q}</div>
+      <div class="quiz-options" id="quizOptions">
+        ${q.options.map((opt, i) => `
+          <button class="quiz-option" onclick="answerQuiz(${i})" data-index="${i}">
+            <span class="opt-letter">${String.fromCharCode(65 + i)}</span>
+            <span>${opt}</span>
+          </button>
+        `).join('')}
+      </div>
+      <div id="quizExplanation"></div>
+      <div class="quiz-actions" id="quizActions"></div>
+    </div>
+    <div class="quiz-assist-bar">
+      <button class="assist-btn" id="btn5050" onclick="use5050()">
+        <i data-lucide="divide" style="width:16px;height:16px;"></i> 50/50
+      </button>
+      <button class="assist-btn" id="btnAquaHint" onclick="useAquaHint()">
+        <i data-lucide="message-circle" style="width:16px;height:16px;"></i> Hỏi Aqua
+      </button>
+      <button class="assist-btn" id="btnSkip" onclick="skipQuestion()">
+        <i data-lucide="skip-forward" style="width:16px;height:16px;"></i> Bỏ qua
+      </button>
+    </div>
+  `;
+  if (window.lucide) lucide.createIcons();
+  updateAssistButtons();
+}
+
+function answerQuiz(index) {
+  if (quizState.answered) return;
+  quizState.answered = true;
+  const q = quizQuestions[quizState.currentIndex];
+  const options = document.querySelectorAll('#quizOptions .quiz-option');
+  const isCorrect = index === q.correct;
+
+  options.forEach((opt, i) => {
+    opt.classList.add('disabled');
+    if (i === q.correct) opt.classList.add('correct');
+    else if (i === index) opt.classList.add('incorrect');
+    opt.onclick = null;
+  });
+
+  const explanation = document.getElementById('quizExplanation');
+  explanation.innerHTML = `
+    <div class="quiz-explanation">
+      <strong>${isCorrect ? '✅ Chính xác!' : '❌ Chưa đúng.'}</strong>
+      Đáp án đúng: <strong>${String.fromCharCode(65 + q.correct)}. ${q.options[q.correct]}</strong><br>
+      ${q.explain}
+    </div>
+  `;
+
+  const points = [0, 10, 15, 20, 25, 30][q.level] || 10;
+  if (isCorrect) {
+    quizState.correct++;
+    quizState.score += points;
+  } else {
+    quizState.wrong++;
+  }
+  quizState.answers.push({ id: q.id, selected: index, correct: isCorrect });
+
+  // Update global progress
+  progress.quiz.answered++;
+  if (isCorrect) progress.quiz.correct++;
+  else progress.quiz.wrong++;
+  progress.quiz.score = Math.max(progress.quiz.score, quizState.score);
+  progress.quiz.highestLevel = Math.max(progress.quiz.highestLevel, q.level);
+  saveProgress();
+
+  const actions = document.getElementById('quizActions');
+  actions.innerHTML = `<button class="btn btn-primary" onclick="nextQuestion()">Tiếp tục <i data-lucide="arrow-right" style="width:16px;height:16px;"></i></button>`;
+  if (window.lucide) lucide.createIcons();
+}
+
+function nextQuestion() {
+  quizState.currentIndex++;
+  if (quizState.currentIndex >= quizQuestions.length) renderQuizResult();
+  else renderQuizQuestion();
+}
+
+function use5050() {
+  if (quizState.used5050 || quizState.answered) return;
+  const q = quizQuestions[quizState.currentIndex];
+  const options = document.querySelectorAll('#quizOptions .quiz-option');
+  const wrongIndices = [];
+  options.forEach((opt, i) => { if (i !== q.correct) wrongIndices.push(i); });
+  const toRemove = wrongIndices.sort(() => Math.random() - 0.5).slice(0, 2);
+  toRemove.forEach(i => {
+    options[i].style.opacity = '0.22';
+    options[i].style.pointerEvents = 'none';
+    options[i].style.textDecoration = 'line-through';
+  });
+  quizState.used5050 = true;
+  updateAssistButtons();
+}
+
+function useAquaHint() {
+  if (quizState.usedAqua || quizState.answered) return;
+  const q = quizQuestions[quizState.currentIndex];
+  quizState.usedAqua = true;
+  openAquaWithContext(null, q);
+  updateAssistButtons();
+}
+
+function skipQuestion() {
+  if (quizState.answered) return;
+  quizState.skipped++;
+  progress.quiz.skipped++;
+  progress.quiz.answered++;
+  saveProgress();
+  quizState.answers.push({ id: quizQuestions[quizState.currentIndex].id, selected: -1, correct: false, skipped: true });
+  nextQuestion();
+}
+
+function updateAssistButtons() {
+  const b1 = document.getElementById('btn5050');
+  const b2 = document.getElementById('btnAquaHint');
+  if (b1) b1.disabled = quizState.used5050 || quizState.answered;
+  if (b2) b2.disabled = quizState.usedAqua || quizState.answered;
+}
+
+function renderQuizResult() {
+  const timeSpent = Math.round((Date.now() - quizState.startTime) / 1000);
+  const totalAnswered = quizState.correct + quizState.wrong;
+  const accuracy = totalAnswered > 0 ? Math.round((quizState.correct / totalAnswered) * 100) : 0;
+  const container = document.getElementById('quizContainer');
+
+  if (progress.quiz.answered >= 10) unlockAchievement('quiz_beginner');
+  if (progress.quiz.answered >= 50) unlockAchievement('quiz_master');
+  saveProgress();
+
+  container.innerHTML = `
+    <div class="quiz-result">
+      <h1>KẾT QUẢ</h1>
+      <div class="result-score">${quizState.score}</div>
+      <p style="color:var(--text-light);font-weight:600;">Tổng điểm</p>
+      <div class="result-stats" style="max-width:640px;margin:28px auto;">
+        <div class="result-stat"><div class="val" style="color:#2D8B5E;">${quizState.correct}</div><div class="lbl">Đúng</div></div>
+        <div class="result-stat"><div class="val" style="color:#C0562A;">${quizState.wrong}</div><div class="lbl">Sai</div></div>
+        <div class="result-stat"><div class="val" style="color:#B8860B;">${quizState.skipped}</div><div class="lbl">Bỏ qua</div></div>
+        <div class="result-stat"><div class="val">${accuracy}%</div><div class="lbl">Độ chính xác</div></div>
+        <div class="result-stat"><div class="val">${timeSpent}s</div><div class="lbl">Thời gian</div></div>
+      </div>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="startQuiz()"><i data-lucide="rotate-ccw" style="width:16px;height:16px;"></i> CHƠI LẠI</button>
+        <button class="btn btn-secondary" onclick="navigateTo('chapters')"><i data-lucide="book-open" style="width:16px;height:16px;"></i> ÔN TẬP</button>
+        <button class="btn btn-ghost" onclick="navigateTo('home')"><i data-lucide="home" style="width:16px;height:16px;"></i> VỀ NHÀ</button>
+      </div>
+    </div>
+  `;
+  if (window.lucide) lucide.createIcons();
+  if (accuracy >= 70) triggerConfetti();
+}
+
+/* ============ AQUA ASSISTANT ============ */
+function openAquaWithContext(chapterId, questionObj) {
+  const panel = document.getElementById('aquaPanel');
+  panel.classList.add('open');
+  aquaContext.chapterId = chapterId;
+  aquaContext.topic = questionObj ? questionObj.topic : (chapterId ? chapters.find(c => c.id === chapterId)?.topic : null);
+
+  const messages = document.getElementById('aquaMessages');
+  messages.innerHTML = '';
+  const qq = document.getElementById('aquaQuickQuestions');
+  qq.innerHTML = '';
+
+  let greeting = 'Chào bạn! Mình là Aqua — linh hồn nước nhỏ bé. Mình có thể giúp gì cho bạn hôm nay?';
+  if (questionObj) {
+    greeting = `Câu hỏi này về "${questionObj.topic}". Mình sẽ gợi ý để bạn tự tìm ra đáp án nhé!`;
+  } else if (chapterId) {
+    const ch = chapters.find(c => c.id === chapterId);
+    if (ch) greeting = `Bạn đang học "${ch.title}". Mình có thể giải thích thêm về ${ch.topic}. Bạn muốn hỏi gì?`;
+  }
+  addAquaMessage('bot', greeting, true);
+  if (questionObj) {
+    setTimeout(() => {
+      addAquaMessage('bot', `💡 Gợi ý: ${questionObj.explain.split('.')[0]}. Hãy suy nghĩ và chọn đáp án nhé!`, true);
+    }, 500);
+  }
+
+  const quickQs = questionObj
+    ? ['Giải thích đơn giản hơn', 'Cho ví dụ thực tế', 'Tại sao lại vậy?']
+    : ['Vòng tuần hoàn nước là gì?', 'Bay hơi là gì?', 'Tại sao mây không phải hơi nước?', 'Nước ngầm là gì?'];
+  quickQs.forEach(q => {
+    const btn = document.createElement('button');
+    btn.className = 'quick-q';
+    btn.textContent = q;
+    btn.onclick = () => { document.getElementById('aquaInput').value = q; sendAquaMessage(); };
+    qq.appendChild(btn);
+  });
+
+  if (!progress.achievements.includes('aqua_best_friend')) unlockAchievement('aqua_best_friend');
+  if (window.lucide) lucide.createIcons();
+}
+function openAqua() { openAquaWithContext(currentChapterId); }
+function closeAqua() { document.getElementById('aquaPanel').classList.remove('open'); }
+
+function addAquaMessage(type, text, typewriter) {
+  const messages = document.getElementById('aquaMessages');
+  if (!messages) return;
+  const div = document.createElement('div');
+  div.className = 'aqua-msg ' + type;
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
+
+  if (typewriter && type === 'bot' && !progress.motionReduced) {
+    let i = 0;
+    const speed = 18;
+    function type() {
+      if (i < text.length) {
+        div.textContent += text.charAt(i);
+        i++;
+        messages.scrollTop = messages.scrollHeight;
+        setTimeout(type, speed);
+      }
+    }
+    type();
+  } else {
+    div.textContent = text;
+  }
+}
+
+function sendAquaMessage() {
+  const input = document.getElementById('aquaInput');
+  const text = input.value.trim();
+  if (!text) return;
+  addAquaMessage('user', text);
+  input.value = '';
+
+  const typing = document.createElement('div');
+  typing.className = 'aqua-typing';
+  typing.innerHTML = '<span></span><span></span><span></span>';
+  document.getElementById('aquaMessages').appendChild(typing);
+  document.getElementById('aquaMessages').scrollTop = document.getElementById('aquaMessages').scrollHeight;
+
+  setTimeout(() => {
+    typing.remove();
+    const response = getAquaResponse(text);
+    addAquaMessage('bot', response, true);
+  }, 700 + Math.random() * 500);
+}
+
+function getAquaResponse(query) {
+  const q = query.toLowerCase();
+  const knowledge = {
+    'bay hơi': 'Bay hơi là khi nước lỏng nhận năng lượng (từ Mặt Trời) và chuyển thành hơi nước. Hãy tưởng tượng quần áo ướt khô dần dưới nắng — đó là bay hơi! Nó khác với đun sôi ở chỗ bay hơi xảy ra ở mọi nhiệt độ, chỉ khác tốc độ thôi.',
+    'ngưng tụ': 'Ngưng tụ là ngược lại của bay hơi: hơi nước gặp lạnh, tụ lại thành giọt nước nhỏ. Những giọt trên ly nước đá chính là hơi nước trong không khí bị lạnh đi đấy! Mây cũng là hàng tỷ giọt nước nhỏ ngưng tụ lại.',
+    'mây': 'Mây KHÔNG phải là hơi nước nhé! Hơi nước trong suốt, vô hình. Mây là những giọt nước lỏng hoặc tinh thể băng nhỏ li ti, đủ nhẹ để lơ lửng trong không khí. Khi chúng lớn dần và nặng hơn, chúng rơi xuống thành mưa.',
+    'mưa': 'Mưa hình thành khi các giọt nước trong mây va chạm, lớn dần cho đến khi trọng lực kéo chúng xuống. Nếu không khí lạnh dưới 0°C, chúng có thể rơi dưới dạng tuyết. Còn mưa đá thì cần mây dông có dòng đối lưu mạnh.',
+    'nước ngầm': 'Nước ngầm là nước chứa trong các lỗ rỗng của đất đá dưới mặt đất. Nó di chuyển rất chậm — có thể mất hàng trăm năm! Đây là nguồn nước ngọt quan trọng nhưng dễ bị ô nhiễm nếu bề mặt bị ô nhiễm.',
+    'thoát hơi': 'Thoát hơi nước là cách thực vật "đổ mồ hôi". Rễ hút nước từ đất, nước đi lên thân rồi thoát ra qua các lỗ nhỏ trên lá gọi là khí khổng. Một cây lớn có thể thải hàng trăm lít nước mỗi ngày đấy!',
+    'vòng tuần hoàn': 'Vòng tuần hoàn nước là hành trình vĩnh cửu của nước: bay hơi từ biển/hồ, ngưng tụ thành mây, rơi xuống thành mưa, chảy trên mặt đất hoặc thấm xuống đất, rồi lại quay về biển. Nhưng không phải tuyến tính đâu — nước có thể đi nhiều đường khác nhau!',
+    'sông băng': 'Sông băng là những khối băng khổng lồ di chuyển rất chậm. Chúng chứa phần lớn nước ngọt của Trái Đất. Khi băng tan, nước chảy vào sông và cung cấp nước cho hàng triệu người.',
+    'ô nhiễm': 'Ô nhiễm nước là khi các chất độc hại xâm nhập vào nguồn nước. Điều này đặc biệt nguy hiểm vì nước ngầm có thể bị ô nhiễm từ bề mặt và rất khó làm sạch. Bảo vệ nguồn nước là bảo vệ chính chúng ta!',
+    'bảo tồn': 'Bảo tồn nước là sử dụng nước thông minh và bảo vệ nguồn nước. Mặc dù nước tuần hoàn, nhưng nước SẠCH thì có hạn. Những việc nhỏ như tắt vòi khi đánh răng, sửa rò rỉ, bảo vệ rừng đều rất quan trọng!',
+    'thấm': 'Thấm là quá trình nước trên mặt đất đi vào trong đất qua các lỗ rỗng. Đất cát thấm nhanh, đất sét thấm chậm. Khi đất đã bão hòa (no nước), nước sẽ chảy trên mặt nhiều hơn.',
+    'dòng chảy': 'Dòng chảy mặt là nước chảy trên bề mặt đất về sông hồ. Địa hình càng dốc, nước chảy càng nhanh. Ở đô thị nhiều bê tông, nước thấm ít nên dòng chảy mặt mạnh hơn, dễ gây ngập úng.'
+  };
+  for (const [key, val] of Object.entries(knowledge)) {
+    if (q.includes(key)) return val;
+  }
+  if (q.includes('ví dụ') || q.includes('thực tế')) {
+    return 'Ví dụ thực tế nhé: Khi bạn phơi quần áo, nước bay hơi. Khi bạn mở tủ lạnh thấy nước đọng, đó là ngưng tụ. Khi mưa rơi, nước chảy trên đường — đó là dòng chảy mặt. Còn nước thấm xuống đất thì bổ sung nước ngầm. Mọi thứ đều kết nối!';
+  }
+  if (q.includes('tại sao') || q.includes('vì sao')) {
+    return 'Câu hỏi hay! Trong vòng tuần hoàn nước, mọi quá trình đều liên kết. Mặt Trời cung cấp năng lượng, trọng lực kéo nước xuống, và các yếu tố như nhiệt độ, gió, địa hình điều chỉnh tốc độ. Bạn muốn mình giải thích cụ thể quá trình nào?';
+  }
+  return 'Mình chưa chắc chắn về câu hỏi này. Bạn có thể hỏi mình về: bay hơi, ngưng tụ, mây, mưa, nước ngầm, thoát hơi nước, vòng tuần hoàn, hoặc bảo tồn nước nhé! Mình là trợ lý giáo dục được lập trình sẵn, không phải AI trực tuyến, nhưng mình sẽ cố gắng hết sức! 💧';
+}
+
+/* ============ LAB ============ */
+const labProcesses = [
+  { name: 'Bay hơi', info: 'Nước từ đại dương, sông hồ bốc hơi thành hơi nước nhờ năng lượng Mặt Trời.', color: '#FFE5A6', emoji: '☀️' },
+  { name: 'Thoát hơi', info: 'Thực vật giải phóng hơi nước qua lá, đóng góp vào độ ẩm khí quyển.', color: '#BFE8D1', emoji: '🌿' },
+  { name: 'Ngưng tụ', info: 'Hơi nước gặp lạnh, tụ thành các giọt nước nhỏ hoặc tinh thể băng tạo nên mây.', color: '#DCD7F8', emoji: '☁️' },
+  { name: 'Giáng thủy', info: 'Nước rơi từ mây xuống dưới dạng mưa, tuyết hoặc mưa đá.', color: '#A8DDF4', emoji: '🌧️' },
+  { name: 'Dòng chảy mặt', info: 'Nước chảy trên bề mặt đất theo địa hình về sông hồ và đại dương.', color: '#6ABFE8', emoji: '🏞️' },
+  { name: 'Thấm', info: 'Nước trên mặt đất thấm vào trong đất, bổ sung nước ngầm.', color: '#D4C4A8', emoji: '💧' },
+  { name: 'Nước ngầm', info: 'Nước tích tụ và di chuyển chậm trong các tầng đất đá dưới mặt đất.', color: '#A89070', emoji: '🌍' },
+  { name: 'Tập trung', info: 'Nước được trữ trong các hồ chứa như đại dương, hồ, sông băng, nước ngầm.', color: '#285477', emoji: '🌊' }
+];
+
+function renderLab() {
+  const container = document.getElementById('labLocations');
+  if (!container) return;
+  container.innerHTML = labProcesses.map((p, i) => `
+    <div class="location-chip" onclick="showLabProcess(${i}, this)" tabindex="0" style="border-left:4px solid ${p.color};">${p.emoji} ${p.name}</div>
+  `).join('');
+}
+
+function showLabProcess(index, el) {
+  document.querySelectorAll('#labLocations .location-chip').forEach(e => e.classList.remove('active'));
+  if (el) el.classList.add('active');
+  const p = labProcesses[index];
+  document.getElementById('labInfo').innerHTML = `<strong>${p.name}:</strong> ${p.info}`;
+  const canvas = document.getElementById('labCanvas');
+  canvas.innerHTML = `
+    <div style="text-align:center;padding:20px;">
+      <div style="font-size:4rem;margin-bottom:16px;animation:mascotFloat 3s ease-in-out infinite;">${p.emoji}</div>
+      <p style="font-weight:800;color:var(--deep-ocean);font-size:1.15rem;">${p.name}</p>
+      <p style="font-size:0.9rem;color:var(--text-light);max-width:420px;margin:10px auto 0;line-height:1.6;">${p.info}</p>
+      <p style="font-size:0.78rem;color:var(--text-light);margin-top:18px;font-style:italic;">Mô phỏng khái niệm — không phải dự báo thời tiết chính xác.</p>
+    </div>
+  `;
+}
+
+/* ============ LIBRARY ============ */
+let currentLibraryFilter = 'all';
+
+function renderLibrary() {
+  const filters = document.getElementById('categoryFilters');
+  const detail = document.getElementById('articleDetail');
+  if (!filters) return;
+  const cats = ['all', ...new Set(libraryArticles.map(a => a.cat))];
+  filters.innerHTML = cats.map(c => `
+    <button class="cat-filter ${c === currentLibraryFilter ? 'active' : ''}" onclick="setLibraryFilter('${c}')">${c === 'all' ? '📚 Tất cả' : c}</button>
+  `).join('');
+  renderArticleGrid();
+  if (detail) detail.innerHTML = '';
+}
+
+function setLibraryFilter(cat) { currentLibraryFilter = cat; renderLibrary(); }
+function filterLibrary() { renderArticleGrid(); }
+
+function renderArticleGrid() {
+  const grid = document.getElementById('articleGrid');
+  if (!grid) return;
+  const search = (document.getElementById('librarySearch')?.value || '').toLowerCase();
+  let filtered = libraryArticles;
+  if (currentLibraryFilter !== 'all') filtered = filtered.filter(a => a.cat === currentLibraryFilter);
+  if (search) filtered = filtered.filter(a =>
+    a.title.toLowerCase().includes(search) ||
+    a.en.toLowerCase().includes(search) ||
+    a.def.toLowerCase().includes(search)
+  );
+  if (filtered.length === 0) {
+    grid.innerHTML = '<p style="color:var(--text-light);grid-column:1/-1;text-align:center;padding:40px;">Không tìm thấy bài viết phù hợp.</p>';
+    return;
+  }
+  grid.innerHTML = filtered.map(a => `
+    <div class="article-card reveal" onclick="openArticle(${a.id})" tabindex="0" role="button">
+      <div class="article-cat">${a.cat}</div>
+      <h3>${a.title}</h3>
+      <div class="article-en">${a.en}</div>
+      <p>${a.def}</p>
+    </div>
+  `).join('');
+  observeReveals();
+}
+
+function openArticle(id) {
+  const a = libraryArticles.find(x => x.id === id);
+  if (!a) return;
+  const detail = document.getElementById('articleDetail');
+  detail.innerHTML = `
+    <div class="article-detail">
+      <div style="display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:8px;">
+        <div>
+          <h2>${a.title}</h2>
+          <div class="article-en-detail">${a.en} — ${a.cat}</div>
+        </div>
+        <button class="btn btn-sm btn-ghost" onclick="document.getElementById('articleDetail').innerHTML=''">Đóng ✕</button>
+      </div>
+      <p><strong>Định nghĩa:</strong> ${a.def}</p>
+      <p><strong>Giải thích:</strong> ${a.explain}</p>
+      <p><strong>Ví dụ thực tế:</strong> ${a.example}</p>
+      <div class="takeaway">💡 ${a.takeaway}</div>
+    </div>
+  `;
+  detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+/* ============ MISSION ============ */
+function renderMission() {
+  const container = document.getElementById('missionContent');
+  if (!container) return;
+  container.innerHTML = `
+    <div class="mission-task reveal">
+      <h3>🌊 Nhiệm vụ 1: Bảo vệ dòng sông</h3>
+      <p style="font-size:0.9rem;color:var(--text-light);margin-bottom:14px;">Chọn hành động đúng để giữ dòng sông sạch.</p>
+      <div class="mission-actions-grid">
+        <button class="mission-action" onclick="missionTaskChoice(true, this)">✓ Không xả rác ra sông</button>
+        <button class="mission-action" onclick="missionTaskChoice(false, this)">✗ Xả nước thải chưa xử lý</button>
+      </div>
+    </div>
+    <div class="mission-task reveal">
+      <h3>💧 Nhiệm vụ 2: Sử dụng nước thông minh</h3>
+      <div class="mission-actions-grid">
+        <button class="mission-action" onclick="missionTaskChoice(true, this)">✓ Tắt vòi khi đánh răng</button>
+        <button class="mission-action" onclick="missionTaskChoice(false, this)">✗ Để nước chảy liên tục</button>
+      </div>
+    </div>
+    <div class="mission-task reveal">
+      <h3>🌳 Nhiệm vụ 3: Bảo vệ hệ sinh thái</h3>
+      <div class="mission-actions-grid">
+        <button class="mission-action" onclick="missionTaskChoice(true, this)">✓ Trồng và bảo vệ rừng</button>
+        <button class="mission-action" onclick="missionTaskChoice(false, this)">✗ Chặt phá rừng đầu nguồn</button>
+      </div>
+    </div>
+    <div id="missionCompletion" style="display:none;" class="reveal">
+      <div class="final-message-box">
+        <h1>THE JOURNEY NEVER ENDS</h1>
+        <p>MỘT HÀNH TRÌNH KHÉP LẠI, MỘT VÒNG TUẦN HOÀN MỚI BẮT ĐẦU.</p>
+        <div class="quote">"VÒNG TUẦN HOÀN NƯỚC LUÔN TIẾP DIỄN,<br>NHƯNG NGUỒN NƯỚC SẠCH KHÔNG PHẢI LÀ VÔ TẬN."</div>
+        <p style="font-style:italic;font-weight:500;">Water connects every living thing. Protecting water means protecting life.</p>
+        <p style="font-weight:700;color:var(--deep-ocean);margin-top:16px;">NUÔI DƯỠNG NGUỒN NƯỚC HÔM NAY, BẢO VỆ SỰ SỐNG NGÀY MAI.</p>
+        <div style="margin-top:32px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="navigateTo('home')">🏠 Về trang chủ</button>
+          <button class="btn btn-secondary" onclick="navigateTo('chapters')">📚 Ôn lại</button>
+          <button class="btn btn-ghost" onclick="navigateTo('quiz')">🎯 Chơi lại Quiz</button>
+        </div>
+      </div>
+    </div>
+  `;
+  observeReveals();
+}
+
+let missionProgressCount = 0;
+function missionTaskChoice(correct, el) {
+  const task = el.closest('.mission-task');
+  if (task.querySelector('.correct-choice')) return;
+  if (correct) {
+    el.classList.add('correct-choice');
+    missionProgressCount++;
+    if (missionProgressCount >= 3) {
+      document.getElementById('missionCompletion').style.display = 'block';
+      document.getElementById('missionCompletion').classList.add('visible');
+      if (!progress.missionCompleted) {
+        progress.missionCompleted = true;
+        unlockAchievement('guardian_of_aquaria');
+        saveProgress();
+        triggerConfetti();
+      }
+    }
+  } else {
+    el.classList.add('wrong-choice');
+    setTimeout(() => el.classList.remove('wrong-choice'), 1200);
+  }
+}
+
+/* ============ SETTINGS ============ */
+function openSettings() { document.getElementById('settingsModal').classList.add('open'); updateSettingsUI(); }
+function closeSettings() { document.getElementById('settingsModal').classList.remove('open'); }
+function toggleSoundSetting() { progress.soundEnabled = !progress.soundEnabled; saveProgress(); updateSettingsUI(); updateSoundIcon(); }
+function toggleMotionSetting() { progress.motionReduced = !progress.motionReduced; saveProgress(); updateSettingsUI(); }
+function updateSettingsUI() {
+  document.getElementById('soundToggle').classList.toggle('on', progress.soundEnabled);
+  document.getElementById('motionToggle').classList.toggle('on', progress.motionReduced);
+}
+function resetProgress() {
+  if (confirm('Bạn có chắc muốn đặt lại toàn bộ tiến trình? Hành động này không thể hoàn tác.')) {
+    localStorage.removeItem(STORAGE_KEY);
+    location.reload();
+  }
+}
+function toggleSound() {
+  progress.soundEnabled = !progress.soundEnabled;
+  saveProgress();
+  updateSoundIcon();
+}
+function updateSoundIcon() {
+  const btn = document.getElementById('soundBtn');
+  if (btn) {
+    btn.innerHTML = progress.soundEnabled
+      ? '<i data-lucide="volume-2"></i>'
+      : '<i data-lucide="volume-x"></i>';
+    if (window.lucide) lucide.createIcons();
+  }
+}
+
+/* ============ INIT ============ */
+document.addEventListener('DOMContentLoaded', () => {
+  if (progress.introSeen) {
+    document.getElementById('introScreen').style.display = 'none';
+    document.getElementById('app').classList.remove('hidden');
+    initApp();
+  }
+  if (window.lucide) lucide.createIcons();
+  updateSoundIcon();
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') { closeSettings(); closeAqua(); }
+});
+
+// Handle window resize for hero canvas
+window.addEventListener('resize', () => {
+  const canvas = document.getElementById('heroCanvas');
+  if (heroRenderer && heroCamera && canvas) {
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    heroRenderer.setSize(w, h);
+    heroCamera.aspect = w / h;
+    heroCamera.updateProjectionMatrix();
+  }
+});
+</script>
+</body>
+</html>
